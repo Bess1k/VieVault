@@ -67,9 +67,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: VaultElement::class, mappedBy: 'createdBy', orphanRemoval: true)]
     private Collection $vaultElements;
+
+    /**
+     * @var Collection<int, Beneficiary>
+     */
+    #[ORM\OneToMany(targetEntity: Beneficiary::class, mappedBy: 'createdBy', orphanRemoval: true)]
+    private Collection $beneficiaries;
     public function __construct()
     {
         $this->vaultElements = new ArrayCollection();
+        $this->beneficiaries = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -231,12 +238,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getpauseUntil(): ?\DateTime
+    public function getPauseUntil(): ?\DateTime
     {
         return $this->pauseUntil;
     }
 
-    public function setpauseUntil(?\DateTime $pauseUntil): static
+    public function setPauseUntil(?\DateTime $pauseUntil): static
     {
         $this->pauseUntil = $pauseUntil;
 
@@ -278,6 +285,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->vaultElements->removeElement($vaultElement)) {
             if ($vaultElement->getCreatedBy() === $this) {
                 $vaultElement->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Beneficiary>
+     */
+    public function getBeneficiaries(): Collection
+    {
+        return $this->beneficiaries;
+    }
+
+    public function addBeneficiary(Beneficiary $beneficiary): static
+    {
+        if (!$this->beneficiaries->contains($beneficiary)) {
+            $this->beneficiaries->add($beneficiary);
+            $beneficiary->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBeneficiary(Beneficiary $beneficiary): static
+    {
+        if ($this->beneficiaries->removeElement($beneficiary)) {
+            // set the owning side to null (unless already changed)
+            if ($beneficiary->getCreatedBy() === $this) {
+                $beneficiary->setCreatedBy(null);
             }
         }
 
