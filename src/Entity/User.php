@@ -73,10 +73,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: Beneficiary::class, mappedBy: 'createdBy', orphanRemoval: true)]
     private Collection $beneficiaries;
+
+    /**
+     * @var Collection<int, AuditLog>
+     */
+    #[ORM\OneToMany(targetEntity: AuditLog::class, mappedBy: 'createdBy')]
+    private Collection $auditLogs;
     public function __construct()
     {
         $this->vaultElements = new ArrayCollection();
         $this->beneficiaries = new ArrayCollection();
+        $this->auditLogs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -315,6 +322,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($beneficiary->getCreatedBy() === $this) {
                 $beneficiary->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AuditLog>
+     */
+    public function getAuditLogs(): Collection
+    {
+        return $this->auditLogs;
+    }
+
+    public function addAuditLog(AuditLog $auditLog): static
+    {
+        if (!$this->auditLogs->contains($auditLog)) {
+            $this->auditLogs->add($auditLog);
+            $auditLog->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAuditLog(AuditLog $auditLog): static
+    {
+        if ($this->auditLogs->removeElement($auditLog)) {
+            // set the owning side to null (unless already changed)
+            if ($auditLog->getCreatedBy() === $this) {
+                $auditLog->setCreatedBy(null);
             }
         }
 
