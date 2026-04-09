@@ -7,6 +7,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -55,10 +57,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $isPaused = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $pauseUntile = null;
+    private ?\DateTime $pauseUntil = null;
 
     #[ORM\Column(length: 20)]
     private ?string $status = null;
+
+    /**
+     * @var Collection<int, VaultElement>
+     */
+    #[ORM\OneToMany(targetEntity: VaultElement::class, mappedBy: 'createdBy', orphanRemoval: true)]
+    private Collection $vaultElements;
+    public function __construct()
+    {
+        $this->vaultElements = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -219,14 +231,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getPauseUntile(): ?\DateTime
+    public function getpauseUntil(): ?\DateTime
     {
-        return $this->pauseUntile;
+        return $this->pauseUntil;
     }
 
-    public function setPauseUntile(?\DateTime $pauseUntile): static
+    public function setpauseUntil(?\DateTime $pauseUntil): static
     {
-        $this->pauseUntile = $pauseUntile;
+        $this->pauseUntil = $pauseUntil;
 
         return $this;
     }
@@ -239,6 +251,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setStatus(string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, VaultElement>
+     */
+    public function getVaultElements(): Collection
+    {
+        return $this->vaultElements;
+    }
+
+    public function addVaultElement(VaultElement $vaultElement): static
+    {
+        if (!$this->vaultElements->contains($vaultElement)) {
+            $this->vaultElements->add($vaultElement);
+            $vaultElement->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVaultElement(VaultElement $vaultElement): static
+    {
+        if ($this->vaultElements->removeElement($vaultElement)) {
+            if ($vaultElement->getCreatedBy() === $this) {
+                $vaultElement->setCreatedBy(null);
+            }
+        }
 
         return $this;
     }
