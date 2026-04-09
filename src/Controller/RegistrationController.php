@@ -24,19 +24,22 @@ class RegistrationController extends AbstractController
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
+            // Hashage du mot de passe avant stockage
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+
+            // Valeurs par défaut pour les champs obligatoires
+            $user->setIsPaused(false);          // Mode vacances désactivé par défaut
+            $user->setStatus('ACTIVE');          // Compte actif à la création
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
-
             return $this->redirectToRoute('app_home');
         }
-
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form,
         ]);
+            
+        
     }
 }
