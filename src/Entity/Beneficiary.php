@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\BeneficiaryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -44,6 +46,17 @@ class Beneficiary
     #[ORM\ManyToOne(inversedBy: 'beneficiaries')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $createdBy = null;
+
+    /**
+     * @var Collection<int, VaultElement>
+     */
+    #[ORM\OneToMany(targetEntity: VaultElement::class, mappedBy: 'beneficiary')]
+    private Collection $vaultElements;
+
+    public function __construct()
+    {
+        $this->vaultElements = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -166,6 +179,36 @@ class Beneficiary
     public function setCreatedBy(?User $createdBy): static
     {
         $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, VaultElement>
+     */
+    public function getVaultElements(): Collection
+    {
+        return $this->vaultElements;
+    }
+
+    public function addVaultElement(VaultElement $vaultElement): static
+    {
+        if (!$this->vaultElements->contains($vaultElement)) {
+            $this->vaultElements->add($vaultElement);
+            $vaultElement->setBeneficiary($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVaultElement(VaultElement $vaultElement): static
+    {
+        if ($this->vaultElements->removeElement($vaultElement)) {
+            // set the owning side to null (unless already changed)
+            if ($vaultElement->getBeneficiary() === $this) {
+                $vaultElement->setBeneficiary(null);
+            }
+        }
 
         return $this;
     }

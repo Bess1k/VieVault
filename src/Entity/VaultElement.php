@@ -36,6 +36,9 @@ class VaultElement
     #[ORM\JoinColumn(nullable: false)]
     private ?User $createdBy = null;
 
+    #[ORM\ManyToOne(inversedBy: 'vaultElements')]
+    private ?Beneficiary $beneficiary = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -121,6 +124,18 @@ class VaultElement
     public function setCreatedBy(?User $createdBy): static
     {
         $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getBeneficiary(): ?Beneficiary
+    {
+        return $this->beneficiary;
+    }
+
+    public function setBeneficiary(?Beneficiary $beneficiary): static
+    {
+        $this->beneficiary = $beneficiary;
 
         return $this;
     }
