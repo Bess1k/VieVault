@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes bénéficiaires{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Mes bénéficiaires</h1>
+        <a href="{{ path('app_beneficiary_new') }}" class="btn btn-primary">+ Ajouter un bénéficiaire</a>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    {% if beneficiaries|length == 0 %}
+        <div class="alert alert-info">
+            Vous n'avez pas encore de bénéficiaire. Ajoutez-en un pour organiser votre héritage.
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Email</th>
+                        <th>Éléments légués</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in beneficiaries %}
+                        <tr>
+                            <td>{{ b.lastname }}</td>
+                            <td>{{ b.firstname }}</td>
+                            <td>{{ b.email }}</td>
+                            <td>
+                                {% if b.vaultElements|length > 0 %}
+                                    {% for el in b.vaultElements %}
+                                        <span class="badge bg-primary">{{ el.title }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted">Aucun élément</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ path('app_beneficiary_edit', {id: b.id}) }}" class="btn btn-sm btn-outline-secondary">Modifier</a>
+                                <form method="post" action="{{ path('app_beneficiary_delete', {id: b.id}) }}" class="d-inline" onsubmit="return confirm('Supprimer ce bénéficiaire ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ b.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{# Formulaire réutilisable pour ajout et modification d'un bénéficiaire #}
+{{ form_start(form) }}
+    {{ form_row(form.lastname) }}
+    {{ form_row(form.firstname) }}
+    {{ form_row(form.email) }}
+    {{ form_row(form.birthDate) }}
+    {{ form_row(form.birthPlace) }}
+
+    <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+    <a href="{{ path('app_beneficiary') }}" class="btn btn-secondary mt-3">Annuler</a>
+{{ form_end(form) }}

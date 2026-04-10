@@ -1,0 +1,35 @@
+{# Formulaire réutilisable pour ajout et modification d'un élément du coffre #}
+{{ form_start(form) }}
+    {{ form_row(form.title) }}
+    {{ form_row(form.type) }}
+    {{ form_row(form.content) }}
+    {{ form_row(form.isHeritage) }}
+
+    {# Liste des bénéficiaires, masquée par défaut si l'élément n'est pas transmissible #}
+    <div id="beneficiary-field" style="display: none;">
+        {{ form_row(form.beneficiary) }}
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+    <a href="{{ path('app_vault') }}" class="btn btn-secondary mt-3">Annuler</a>
+{{ form_end(form) }}
+
+{# Script pour afficher/masquer la liste des bénéficiaires
+   selon l'état de la case "Transmissible aux bénéficiaires" #}
+<script>
+    // Récupérer la case à cocher "Transmissible"
+    const checkbox = document.getElementById('{{ form.isHeritage.vars.id }}');
+    // Récupérer le conteneur de la liste des bénéficiaires
+    const beneficiaryField = document.getElementById('beneficiary-field');
+
+    // Fonction qui affiche ou masque la liste selon l'état de la case
+    function toggleBeneficiary() {
+        beneficiaryField.style.display = checkbox.checked ? 'block' : 'none';
+    }
+
+    // Vérifier l'état au chargement de la page (utile en mode édition)
+    toggleBeneficiary();
+
+    // Écouter les changements de la case à cocher
+    checkbox.addEventListener('change', toggleBeneficiary);
+</script>

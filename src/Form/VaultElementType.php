@@ -10,6 +10,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Entity\Beneficiary;
+use App\Repository\BeneficiaryRepository;
 
 class VaultElementType extends AbstractType
 {
@@ -39,6 +42,20 @@ class VaultElementType extends AbstractType
                 'label' => 'Transmissible aux bénéficiaires',
                 'required' => false,
             ])
+            ->add('beneficiary', EntityType::class, [
+                'class' => Beneficiary::class,
+                'choice_label' => function (Beneficiary $b) {
+                    return $b->getFirstname() . ' ' . $b->getLastname();
+                },
+                'label' => 'Bénéficiaire désigné',
+                'required' => false,
+                'placeholder' => '-- Aucun (élément privé) --',
+                'query_builder' => function (BeneficiaryRepository $repo) use ($options) {
+                    return $repo->createQueryBuilder('b')
+                        ->where('b.createdBy = :user')
+                        ->setParameter('user', $options['user']);
+                },
+            ])
         ;
     }
 
@@ -46,6 +63,7 @@ class VaultElementType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => VaultElement::class,
+            'user' => null,
         ]);
     }
 }

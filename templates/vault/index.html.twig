@@ -28,6 +28,9 @@
                             <span class="badge bg-primary">{{ element.type }}</span>
                             {% if element.isHeritage %}
                                 <span class="badge bg-warning">Héritage</span>
+                                {% if element.beneficiary %}
+                                    <span class="badge bg-info">→ {{ element.beneficiary.firstname }} {{ element.beneficiary.lastname }}</span>
+                                {% endif %}
                             {% endif %}
                             <p class="card-text mt-2 text-muted">
                                 Ajouté le {{ element.createdAt|date('d/m/Y à H:i') }}

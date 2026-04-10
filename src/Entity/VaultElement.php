@@ -39,6 +39,9 @@ class VaultElement
     #[ORM\ManyToOne(inversedBy: 'vaultElements')]
     private ?Beneficiary $beneficiary = null;
 
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $filePath = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -136,6 +139,18 @@ class VaultElement
     public function setBeneficiary(?Beneficiary $beneficiary): static
     {
         $this->beneficiary = $beneficiary;
+
+        return $this;
+    }
+
+    public function getFilePath(): ?string
+    {
+        return $this->filePath;
+    }
+
+    public function setFilePath(?string $filePath): static
+    {
+        $this->filePath = $filePath;
 
         return $this;
     }

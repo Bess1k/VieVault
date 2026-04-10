@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{# Titre dynamique : change selon qu'on ajoute ou modifie #}
+{% block title %}
+{{ beneficiary.id ? 'Modifier : ' ~ beneficiary.firstname ~ ' ' ~ beneficiary.lastname : 'Ajouter un bénéficiaire' }}
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>{{ beneficiary.id ? 'Modifier : ' ~ beneficiary.firstname ~ ' ' ~ beneficiary.lastname : 'Ajouter un bénéficiaire' }}</h1>
+    {% include 'beneficiary/_partials/form.html.twig' %}
+</div>
+{% endblock %}

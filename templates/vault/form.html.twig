@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{# Titre dynamique : change selon qu'on ajoute ou modifie #}
+{% block title %}{{ element.id ? 'Modifier : ' ~ element.title : 'Ajouter un élément' }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>{{ element.id ? 'Modifier : ' ~ element.title : 'Ajouter un élément au coffre' }}</h1>
+    {% include 'vault/_partials/form.html.twig' %}
+</div>
+{% endblock %}

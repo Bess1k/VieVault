@@ -31,7 +31,9 @@ final class VaultController extends AbstractController
     public function new(Request $request, EntityManagerInterface $em): Response
     {
         $element = new VaultElement();
-        $form = $this->createForm(VaultElementType::class, $element);
+        $form = $this->createForm(VaultElementType::class, $element, [
+            'user' => $this->getUser(),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -47,8 +49,9 @@ final class VaultController extends AbstractController
             return $this->redirectToRoute('app_vault');
         }
 
-        return $this->render('vault/new.html.twig', [
+        return $this->render('vault/form.html.twig', [
             'form' => $form,
+            'element' => $element,
         ]);
     }
 
@@ -61,7 +64,9 @@ final class VaultController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $form = $this->createForm(VaultElementType::class, $element);
+        $form = $this->createForm(VaultElementType::class, $element, [
+            'user' => $this->getUser(),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -74,7 +79,7 @@ final class VaultController extends AbstractController
             return $this->redirectToRoute('app_vault');
         }
 
-        return $this->render('vault/edit.html.twig', [
+        return $this->render('vault/form.html.twig', [
             'form' => $form,
             'element' => $element,
         ]);
