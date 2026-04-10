@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Bienvenue, {{ user.firstname }} {{ user.lastname }}</h1>
+    <p>Statut du compte : <span class="badge bg-success">{{ user.status }}</span></p>
+
+    <div class="row mt-4">
+        {# Carte : Éléments du coffre #}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Mon coffre</h5>
+                    <p class="display-6">{{ vaultElements|length }}</p>
+                    <p class="text-muted">élément(s)</p>
+                    <a href="#" class="btn btn-primary btn-sm">Gérer</a>
+                </div>
+            </div>
+        </div>
+
+        {# Carte : Bénéficiaires #}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Mes bénéficiaires</h5>
+                    <p class="display-6">{{ beneficiaries|length }}</p>
+                    <p class="text-muted">bénéficiaire(s)</p>
+                    <a href="#" class="btn btn-primary btn-sm">Gérer</a>
+                </div>
+            </div>
+        </div>
+
+        {# Carte : Mode vacances #}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Mode vacances</h5>
+                    {% if user.isPaused %}
+                        <span class="badge bg-warning">Activé</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Désactivé</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
