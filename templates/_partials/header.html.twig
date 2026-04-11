@@ -2,6 +2,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">
+                <img src="{{ asset('images/logo.png') }}" alt="VieVault" height="35" class="me-2">
                 VieVault
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
@@ -12,6 +13,30 @@
                     <li class="nav-item">
                         <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
                     </li>
+
+                    {% if app.user %}
+                        {# Menu visible uniquement pour les utilisateurs connectés #}
+                        <li class="nav-item">
+                            <a href="{{ path('app_dashboard') }}" class="nav-link">Tableau de bord</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ path('app_vault') }}" class="nav-link">Mon coffre</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ path('app_beneficiary') }}" class="nav-link">Bénéficiaires</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ path('app_logout') }}" class="nav-link text-warning">Déconnexion</a>
+                        </li>
+                    {% else %}
+                        {# Menu visible uniquement pour les visiteurs #}
+                        <li class="nav-item">
+                            <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ path('app_register') }}" class="nav-link">Inscription</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

@@ -15,7 +15,7 @@
                     <h5 class="card-title">Mon coffre</h5>
                     <p class="display-6">{{ vaultElements|length }}</p>
                     <p class="text-muted">élément(s)</p>
-                    <a href="#" class="btn btn-primary btn-sm">Gérer</a>
+                    <a href="{{ path('app_vault') }}" class="btn btn-primary btn-sm">Gérer</a>
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@
                     <h5 class="card-title">Mes bénéficiaires</h5>
                     <p class="display-6">{{ beneficiaries|length }}</p>
                     <p class="text-muted">bénéficiaire(s)</p>
-                    <a href="#" class="btn btn-primary btn-sm">Gérer</a>
+                    <a href="{{ path('app_beneficiary') }}" class="btn btn-primary btn-sm">Gérer</a>
                 </div>
             </div>
         </div>

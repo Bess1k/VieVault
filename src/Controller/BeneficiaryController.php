@@ -72,7 +72,7 @@ final class BeneficiaryController extends AbstractController
             return $this->redirectToRoute('app_beneficiary');
         }
 
-        return $this->render('beneficiary/edit.html.twig', [
+        return $this->render('beneficiary/form.html.twig', [
             'form' => $form,
             'beneficiary' => $beneficiary,
         ]);
