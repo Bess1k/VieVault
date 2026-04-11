@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use App\Service\AuditLogger;
 
 #[IsGranted('ROLE_USER')]
 final class DashboardController extends AbstractController
@@ -27,28 +28,32 @@ final class DashboardController extends AbstractController
     
     // Activer/Désactiver le mode vacances
     #[Route('/dashboard/vacation', name: 'app_vacation_toggle', methods: ['POST'])]
-    public function toggleVacation(Request $request, EntityManagerInterface $em): Response
+    public function toggleVacation(Request $request, EntityManagerInterface $em, AuditLogger $auditLogger): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
-    
+
         // Vérification du token CSRF
         if ($this->isCsrfTokenValid('vacation', $request->request->get('_token'))) {
             if ($user->isPaused()) {
+                // Enregistrer l'action dans les logs avant le changement
+                $auditLogger->log($user, 'VACATION_OFF');
                 // Désactiver le mode vacances
                 $user->setIsPaused(false);
                 $user->setPauseUntil(null);
                 $this->addFlash('success', 'Mode vacances désactivé.');
             } else {
+                // Enregistrer l'action dans les logs avant le changement
+                $auditLogger->log($user, 'VACATION_ON');
                 // Activer le mode vacances (180 jours maximum)
                 $user->setIsPaused(true);
                 $user->setPauseUntil(new \DateTime('+180 days'));
                 $this->addFlash('success', 'Mode vacances activé pour 180 jours.');
             }
-    
+
             $em->flush();
         }
-    
+
         return $this->redirectToRoute('app_dashboard');
     }
 }

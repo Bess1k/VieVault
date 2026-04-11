@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Service\AuditLogger;
 
 #[IsGranted('ROLE_USER')]
 #[Route('/vault')]
@@ -28,7 +29,7 @@ final class VaultController extends AbstractController
 
     // Ajouter un nouvel élément au coffre
     #[Route('/new', name: 'app_vault_new')]
-    public function new(Request $request, EntityManagerInterface $em): Response
+    public function new(Request $request, EntityManagerInterface $em, AuditLogger $auditLogger): Response
     {
         $element = new VaultElement();
         $form = $this->createForm(VaultElementType::class, $element, [
@@ -44,6 +45,7 @@ final class VaultController extends AbstractController
 
             $em->persist($element);
             $em->flush();
+            $auditLogger->log($this->getUser(), 'CREATE');
 
             $this->addFlash('success', 'Élément ajouté au coffre.');
             return $this->redirectToRoute('app_vault');
@@ -57,7 +59,7 @@ final class VaultController extends AbstractController
 
     // Modifier un élément existant
     #[Route('/{id}/edit', name: 'app_vault_edit')]
-    public function edit(VaultElement $element, Request $request, EntityManagerInterface $em): Response
+    public function edit(VaultElement $element, Request $request, EntityManagerInterface $em, AuditLogger $auditLogger): Response
     {
         // Vérifier que l'élément appartient à l'utilisateur connecté
         if ($element->getCreatedBy() !== $this->getUser()) {
@@ -74,6 +76,7 @@ final class VaultController extends AbstractController
             $element->setUpdatedAt(new \DateTime());
 
             $em->flush();
+            $auditLogger->log($this->getUser(), 'UPDATE');
 
             $this->addFlash('success', 'Élément modifié.');
             return $this->redirectToRoute('app_vault');
@@ -87,7 +90,7 @@ final class VaultController extends AbstractController
 
     // Supprimer un élément
     #[Route('/{id}/delete', name: 'app_vault_delete', methods: ['POST'])]
-    public function delete(VaultElement $element, Request $request, EntityManagerInterface $em): Response
+    public function delete(VaultElement $element, Request $request, EntityManagerInterface $em, AuditLogger $auditLogger): Response
     {
         // Vérifier que l'élément appartient à l'utilisateur connecté
         if ($element->getCreatedBy() !== $this->getUser()) {
@@ -98,6 +101,7 @@ final class VaultController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $element->getId(), $request->request->get('_token'))) {
             $em->remove($element);
             $em->flush();
+            $auditLogger->log($this->getUser(), 'DELETE');
             $this->addFlash('success', 'Élément supprimé.');
         }
 

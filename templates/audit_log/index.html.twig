@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Logs d'audit{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Logs d'audit</h1>
+    <p class="text-muted">Historique de toutes les actions effectuées sur votre compte.</p>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    {% if logs|length == 0 %}
+        <div class="alert alert-info">Aucune activité enregistrée.</div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>Adresse IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                        <tr>
+                            <td>{{ log.createdAt|date('d/m/Y à H:i') }}</td>
+                            <td>
+                                {% if log.action == 'LOGIN' %}
+                                    <span class="badge bg-success">Connexion</span>
+                                {% elseif log.action == 'PANIC_LOGIN' %}
+                                    <span class="badge bg-danger">Connexion panique</span>
+                                {% elseif log.action == 'CREATE' %}
+                                    <span class="badge bg-primary">Création</span>
+                                {% elseif log.action == 'UPDATE' %}
+                                    <span class="badge bg-warning">Modification</span>
+                                {% elseif log.action == 'DELETE' %}
+                                    <span class="badge bg-danger">Suppression</span>
+                                {% elseif log.action == 'VACATION_ON' %}
+                                    <span class="badge bg-info">Mode vacances activé</span>
+                                {% elseif log.action == 'VACATION_OFF' %}
+                                    <span class="badge bg-secondary">Mode vacances désactivé</span>
+                                {% else %}
+                                    <span class="badge bg-dark">{{ log.action }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ log.ipAddress ?? 'N/A' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
