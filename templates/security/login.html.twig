@@ -5,7 +5,11 @@
 {% block body %}
     <form method="post">
         {% if error %}
-            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% if error.messageKey == 'Invalid CSRF token.' %}
+                <div class="alert alert-warning">Votre session a expiré. Veuillez réessayer.</div>
+            {% else %}
+                <div class="alert alert-danger">Identifiants incorrects. Veuillez réessayer.</div>
+            {% endif %}
         {% endif %}
 
         {% if app.user %}

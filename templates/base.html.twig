@@ -21,6 +21,13 @@
     <body>
         {% include '_partials/header.html.twig' %}
 
+        {# Bandeau mode vacances visible sur toutes les pages #}
+        {% if app.user and app.user.isPaused %}
+            <div class="alert alert-warning text-center mb-0">
+                Mode vacances activé jusqu'au {{ app.user.pauseUntil|date('d/m/Y') }}
+            </div>
+        {% endif %}
+
         <main class="container">
             {% block body %}{% endblock %}
         </main>

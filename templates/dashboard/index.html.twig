@@ -7,6 +7,11 @@
     <h1>Bienvenue, {{ user.firstname }} {{ user.lastname }}</h1>
     <p>Statut du compte : <span class="badge bg-success">{{ user.status }}</span></p>
 
+     {# Affichage de messages #}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
     <div class="row mt-4">
         {# Carte : Éléments du coffre #}
         <div class="col-md-4 mb-3">
@@ -38,13 +43,24 @@
                 <div class="card-body text-center">
                     <h5 class="card-title">Mode vacances</h5>
                     {% if user.isPaused %}
-                        <span class="badge bg-warning">Activé</span>
+                        <span class="badge bg-warning mb-2">Activé</span>
+                        {% if user.pauseUntil %}
+                            <p class="text-muted">Jusqu'au {{ user.pauseUntil|date('d/m/Y') }}</p>
+                        {% endif %}
+                        <form method="post" action="{{ path('app_vacation_toggle') }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('vacation') }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Désactiver</button>
+                        </form>
                     {% else %}
-                        <span class="badge bg-secondary">Désactivé</span>
+                        <span class="badge bg-secondary mb-2">Désactivé</span>
+                        <p class="text-muted">Le Dead Man's Switch est actif</p>
+                        <form method="post" action="{{ path('app_vacation_toggle') }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('vacation') }}">
+                            <button type="submit" class="btn btn-sm btn-outline-success">Activer (180 jours)</button>
+                        </form>
                     {% endif %}
                 </div>
             </div>
         </div>
-    </div>
 </div>
 {% endblock %}
