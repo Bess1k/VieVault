@@ -2,23 +2,36 @@
 
 namespace App\Controller;
 
+use App\Service\AuditLogger;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use App\Service\AuditLogger;
 
 #[IsGranted('ROLE_USER')]
 final class DashboardController extends AbstractController
 {
     #[Route('/dashboard', name: 'app_dashboard')]
-    public function index(): Response
+    public function index(RequestStack $requestStack): Response
     {
-        // Récupérer l'utilisateur connecté
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
+        // Vérifier si on est en mode panique
+        $isPanicMode = $this->container->get('request_stack')->getSession()->get('panic_mode', false);
+
+        if ($isPanicMode) {
+            // Mode panique : afficher le dashboard leurre avec de fausses données
+            return $this->render('dashboard/leurre.html.twig', [
+                'user' => $user,
+            ]);
+        }
+
+        // Mode normal : afficher le vrai dashboard
         return $this->render('dashboard/index.html.twig', [
             'user' => $user,
             'vaultElements' => $user->getVaultElements(),
@@ -55,5 +68,30 @@ final class DashboardController extends AbstractController
         }
 
         return $this->redirectToRoute('app_dashboard');
+    }
+
+    // Configurer le mot de passe panique
+    #[Route('/dashboard/panic-password', name: 'app_panic_password')]
+    public function panicPassword(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $em): Response
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        if ($request->isMethod('POST')) {
+            $panicPassword = $request->request->get('panic_password');
+
+            if ($panicPassword && strlen($panicPassword) >= 6) {
+                // Hasher le mot de passe panique avec bcrypt
+                $user->setPanicPasswordHash(password_hash($panicPassword, PASSWORD_BCRYPT));
+                $em->flush();
+                $this->addFlash('success', 'Mot de passe panique configuré.');
+            } else {
+                $this->addFlash('danger', 'Le mot de passe panique doit contenir au moins 6 caractères.');
+            }
+
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        return $this->render('dashboard/panic_password.html.twig');
     }
 }

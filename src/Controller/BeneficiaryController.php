@@ -7,6 +7,7 @@ use App\Form\BeneficiaryType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -17,9 +18,22 @@ final class BeneficiaryController extends AbstractController
 {
     // Liste des bénéficiaires de l'utilisateur connecté
     #[Route('', name: 'app_beneficiary')]
-    public function index(): Response
+    public function index(RequestStack $requestStack): Response
     {
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
+
+        // Mode panique : afficher de faux bénéficiaires
+        if ($requestStack->getSession()->get('panic_mode', false)) {
+            $fakeBeneficiaries = [
+                ['lastname' => 'Martin', 'firstname' => 'Sophie', 'email' => 'sophie.martin@email.fr'],
+                ['lastname' => 'Dubois', 'firstname' => 'Pierre', 'email' => 'pierre.dubois@email.fr'],
+            ];
+
+            return $this->render('beneficiary/leurre.html.twig', [
+                'fakeBeneficiaries' => $fakeBeneficiaries,
+            ]);
+        }
 
         return $this->render('beneficiary/index.html.twig', [
             'beneficiaries' => $user->getBeneficiaries(),

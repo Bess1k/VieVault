@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Bienvenue, {{ user.firstname }} {{ user.lastname }}</h1>
+    <p>Statut du compte : <span class="badge bg-success">ACTIVE</span></p>
+
+    <div class="row mt-4">
+        {# Faux coffre avec 3 éléments #}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Mon coffre</h5>
+                    <p class="display-6">3</p>
+                    <p class="text-muted">élément(s)</p>
+                    <a href="{{ path('app_vault') }}" class="btn btn-primary btn-sm">Gérer</a>
+                </div>
+            </div>
+        </div>
+
+        {# Faux bénéficiaires avec 2 personnes #}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Mes bénéficiaires</h5>
+                    <p class="display-6">2</p>
+                    <p class="text-muted">bénéficiaire(s)</p>
+                    <a href="{{ path('app_beneficiary') }}" class="btn btn-primary btn-sm">Gérer</a>
+                </div>
+            </div>
+        </div>
+
+        {# Faux mode vacances #}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Mode vacances</h5>
+                    <span class="badge bg-secondary mb-2">Désactivé</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

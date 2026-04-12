@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes bénéficiaires{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Mes bénéficiaires</h1>
+        <a href="#" class="btn btn-primary">+ Ajouter un bénéficiaire</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in fakeBeneficiaries %}
+                    <tr>
+                        <td>{{ b.lastname }}</td>
+                        <td>{{ b.firstname }}</td>
+                        <td>{{ b.email }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

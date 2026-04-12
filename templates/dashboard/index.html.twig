@@ -62,5 +62,24 @@
                 </div>
             </div>
         </div>
+
+        {# Carte : Mot de passe panique - visible uniquement en mode normal #}
+        {% if not app.session.get('panic_mode') %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Mot de passe panique</h5>
+                    {% if user.panicPasswordHash %}
+                        <span class="badge bg-success mb-2">Configuré</span>
+                    {% else %}
+                        <span class="badge bg-secondary mb-2">Non configuré</span>
+                    {% endif %}
+                    <br>
+                    <a href="{{ path('app_panic_password') }}" class="btn btn-sm btn-outline-danger">Configurer</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
 </div>
 {% endblock %}
