@@ -15,6 +15,8 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\CustomCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 // Authenticator personnalisé pour VieVault
 // Gère deux mots de passe : le réel (accès normal) et le panique (mode leurre)
@@ -25,6 +27,7 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
         private UserPasswordHasherInterface $passwordHasher,
         private UserRepository $userRepo,
         private AuditLogger $auditLogger,
+        private MailerInterface $mailer,
     ) {}
 
     // URL de la page de connexion
@@ -42,8 +45,9 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
 
         return new Passport(
             new UserBadge($email),
-            // Vérification personnalisée des credentials
+            // Vérification personnalisée : accepte le mot de passe normal OU panique
             new CustomCredentials(function ($password, $user) use ($request) {
+
                 // 1. Vérifier le mot de passe normal
                 if ($this->passwordHasher->isPasswordValid($user, $password)) {
                     // Connexion normale — supprimer le mode panique si existant
@@ -55,8 +59,29 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
                 if ($user->getPanicPasswordHash() && password_verify($password, $user->getPanicPasswordHash())) {
                     // Mode panique activé — marquer la session
                     $request->getSession()->set('panic_mode', true);
-                    // Enregistrer l'alerte dans les logs
+                    // Enregistrer dans les logs d'audit
                     $this->auditLogger->log($user, 'PANIC_LOGIN');
+
+                    // Envoyer un SOS au contact de confiance
+                    if ($user->getEmergencyEmail()) {
+                        try {
+                            $sosEmail = (new Email())
+                                ->from('noreply@vievault.fr')
+                                ->to($user->getEmergencyEmail())
+                                ->subject('ALERTE VieVault — SOS')
+                                ->html(
+                                    '<h2>Alerte de sécurité VieVault</h2>' .
+                                    '<p>L\'utilisateur <strong>' . $user->getFirstname() . ' ' . $user->getLastname() . '</strong> ' .
+                                    'a déclenché une alerte de sécurité sur son compte VieVault.</p>' .
+                                    '<p>Cette alerte signifie que l\'utilisateur pourrait être en danger.</p>' .
+                                    '<p><em>Message automatique — ne pas répondre.</em></p>'
+                                );
+                            $this->mailer->send($sosEmail);
+                        } catch (\Exception $e) {
+                            // En cas d'erreur d'envoi, on continue sans bloquer la connexion
+                        }
+                    }
+
                     return true;
                 }
 

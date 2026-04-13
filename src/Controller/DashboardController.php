@@ -72,19 +72,20 @@ final class DashboardController extends AbstractController
 
     // Configurer le mot de passe panique
     #[Route('/dashboard/panic-password', name: 'app_panic_password')]
-    public function panicPassword(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $em): Response
+    public function panicPassword(Request $request, EntityManagerInterface $em): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
         if ($request->isMethod('POST')) {
             $panicPassword = $request->request->get('panic_password');
+            $emergencyEmail = $request->request->get('emergency_email');
 
             if ($panicPassword && strlen($panicPassword) >= 6) {
-                // Hasher le mot de passe panique avec bcrypt
                 $user->setPanicPasswordHash(password_hash($panicPassword, PASSWORD_BCRYPT));
+                $user->setEmergencyEmail($emergencyEmail);
                 $em->flush();
-                $this->addFlash('success', 'Mot de passe panique configuré.');
+                $this->addFlash('success', 'Mot de passe panique et contact de confiance configurés.');
             } else {
                 $this->addFlash('danger', 'Le mot de passe panique doit contenir au moins 6 caractères.');
             }
@@ -94,4 +95,6 @@ final class DashboardController extends AbstractController
 
         return $this->render('dashboard/panic_password.html.twig');
     }
+
+   
 }

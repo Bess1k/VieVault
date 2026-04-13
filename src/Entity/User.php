@@ -79,6 +79,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: AuditLog::class, mappedBy: 'createdBy')]
     private Collection $auditLogs;
+
+    #[ORM\Column(length: 180, nullable: true)]
+    private ?string $emergencyEmail = null;
     public function __construct()
     {
         $this->vaultElements = new ArrayCollection();
@@ -354,6 +357,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $auditLog->setCreatedBy(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEmergencyEmail(): ?string
+    {
+        return $this->emergencyEmail;
+    }
+
+    public function setEmergencyEmail(?string $emergencyEmail): static
+    {
+        $this->emergencyEmail = $emergencyEmail;
 
         return $this;
     }
