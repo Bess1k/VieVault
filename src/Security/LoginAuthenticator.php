@@ -95,6 +95,18 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
     // Redirection après connexion réussie
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        /** @var \App\Entity\User $user */
+        $user = $token->getUser();
+
+        // Rediriger selon le rôle
+        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+            return new RedirectResponse($this->urlGenerator->generate('app_admin'));
+        }
+
+        if (in_array('ROLE_NOTAIRE', $user->getRoles())) {
+            return new RedirectResponse($this->urlGenerator->generate('app_notaire'));
+        }
+
         return new RedirectResponse($this->urlGenerator->generate('app_dashboard'));
     }
 }

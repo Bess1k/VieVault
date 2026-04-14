@@ -15,24 +15,41 @@
                     </li>
 
                     {% if app.user %}
-                        {# Menu visible uniquement pour les utilisateurs connectés #}
-                        <li class="nav-item">
-                            <a href="{{ path('app_profile') }}" class="nav-link">Mon profil</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ path('app_dashboard') }}" class="nav-link">Tableau de bord</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ path('app_vault') }}" class="nav-link">Mon coffre</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ path('app_beneficiary') }}" class="nav-link">Bénéficiaires</a>
-                        </li>
+                        {# Menu Administrateur #}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li class="nav-item">
+                                <a href="{{ path('app_admin') }}" class="nav-link">Administration</a>
+                            </li>
+
+                        {# Menu Notaire — uniquement l'espace notaire #}
+                        {% elseif is_granted('ROLE_NOTAIRE') %}
+                            <li class="nav-item">
+                                <a href="{{ path('app_notaire') }}" class="nav-link">Espace Notaire</a>
+                            </li>
+
+                        {# Menu Utilisateur normal #}
+                        {% else %}
+                            <li class="nav-item">
+                                <a href="{{ path('app_dashboard') }}" class="nav-link">Tableau de bord</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('app_vault') }}" class="nav-link">Mon coffre</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('app_beneficiary') }}" class="nav-link">Bénéficiaires</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('app_audit_logs') }}" class="nav-link">Logs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('app_profile') }}" class="nav-link">Mon profil</a>
+                            </li>
+                        {% endif %}
+
                         <li class="nav-item">
                             <a href="{{ path('app_logout') }}" class="nav-link text-warning">Déconnexion</a>
                         </li>
                     {% else %}
-                        {# Menu visible uniquement pour les visiteurs #}
                         <li class="nav-item">
                             <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
                         </li>
