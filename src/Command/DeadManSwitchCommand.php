@@ -39,7 +39,7 @@ class DeadManSwitchCommand extends Command
 
         $triggeredCount = 0;
 
-        foreach ($users as $user) {
+       foreach ($users as $user) {
             // Ignorer les utilisateurs en mode vacances
             if ($user->isPaused()) {
                 $io->note('Utilisateur ' . $user->getEmail() . ' en mode vacances — ignoré.');
@@ -49,7 +49,22 @@ class DeadManSwitchCommand extends Command
             // Vérifier si la dernière connexion dépasse 90 jours
             $lastLogin = $user->getLastLoginAt();
 
-            if ($lastLogin === null || $lastLogin < $limitDate) {
+            // Ignorer les utilisateurs qui ne se sont jamais connectés
+            if ($lastLogin === null) {
+                continue;
+            }
+
+            // Ignorer les utilisateurs sans éléments d'héritage
+            $heritageElements = $user->getVaultElements()->filter(function ($el) {
+                return $el->isHeritage();
+            });
+
+            if ($heritageElements->isEmpty()) {
+                $io->note('Utilisateur ' . $user->getEmail() . ' — aucun élément d\'héritage, ignoré.');
+                continue;
+            }
+
+            if ($lastLogin < $limitDate) {
                 // Déclencher le protocole d'héritage
                 $user->setStatus('INACTIVE');
                 $this->auditLogger->log($user, 'HERITAGE_TRIGGER');
