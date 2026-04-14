@@ -38,6 +38,56 @@ final class DashboardController extends AbstractController
             'beneficiaries' => $user->getBeneficiaries(),
         ]);
     }
+
+
+    // Afficher et modifier le profil
+    #[Route('/profile', name: 'app_profile')]
+    public function profile(Request $request, EntityManagerInterface $em): Response
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        if ($request->isMethod('POST')) {
+            $user->setLastname($request->request->get('lastname'));
+            $user->setFirstname($request->request->get('firstname'));
+            $user->setEmail($request->request->get('email'));
+            $user->setBirthPlace($request->request->get('birthPlace'));
+
+            $em->flush();
+            $this->addFlash('success', 'Profil mis à jour.');
+            return $this->redirectToRoute('app_profile');
+        }
+
+        return $this->render('dashboard/profile.html.twig', [
+            'user' => $user,
+        ]);
+    }
+
+    // Supprimer le compte
+    #[Route('/profile/delete', name: 'app_profile_delete', methods: ['POST'])]
+    public function deleteAccount(Request $request, EntityManagerInterface $em): Response
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        // Vérification CSRF
+        if ($this->isCsrfTokenValid('delete_account', $request->request->get('_token'))) {
+            // Déconnecter l'utilisateur avant suppression
+            $this->container->get('security.token_storage')->setToken(null);
+            $request->getSession()->invalidate();
+
+            // Supprimer l'utilisateur et toutes ses données
+            $em->remove($user);
+            $em->flush();
+
+            $this->addFlash('success', 'Votre compte a été supprimé.');
+            return $this->redirectToRoute('app_home');
+        }
+
+        return $this->redirectToRoute('app_profile');
+    }
+
+
     
     // Activer/Désactiver le mode vacances
     #[Route('/dashboard/vacation', name: 'app_vacation_toggle', methods: ['POST'])]

@@ -17,6 +17,9 @@
                     {% if app.user %}
                         {# Menu visible uniquement pour les utilisateurs connectés #}
                         <li class="nav-item">
+                            <a href="{{ path('app_profile') }}" class="nav-link">Mon profil</a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ path('app_dashboard') }}" class="nav-link">Tableau de bord</a>
                         </li>
                         <li class="nav-item">
