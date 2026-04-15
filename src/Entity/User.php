@@ -82,6 +82,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180, nullable: true)]
     private ?string $emergencyEmail = null;
+
+    #[ORM\Column]
+    private ?bool $isVerified = null;
     public function __construct()
     {
         $this->vaultElements = new ArrayCollection();
@@ -369,6 +372,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmergencyEmail(?string $emergencyEmail): static
     {
         $this->emergencyEmail = $emergencyEmail;
+
+        return $this;
+    }
+
+    public function isVerified(): ?bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
 
         return $this;
     }

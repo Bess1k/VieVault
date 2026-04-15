@@ -53,7 +53,7 @@
                         </form>
                     {% else %}
                         <span class="badge bg-secondary mb-2">Désactivé</span>
-                        <p class="text-muted">Le Dead Man's Switch est actif</p>
+                        <p class="text-muted"></p>
                         <form method="post" action="{{ path('app_vacation_toggle') }}">
                             <input type="hidden" name="_token" value="{{ csrf_token('vacation') }}">
                             <button type="submit" class="btn btn-sm btn-outline-success">Activer (180 jours)</button>

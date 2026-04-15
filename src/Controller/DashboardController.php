@@ -21,6 +21,11 @@ final class DashboardController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
+        // Bloquer l'accès si email non vérifié
+        if (!$user->isVerified()) {
+            return $this->render('dashboard/verify_email.html.twig');
+        }
+
         // Vérifier si on est en mode panique
         $isPanicMode = $this->container->get('request_stack')->getSession()->get('panic_mode', false);
 

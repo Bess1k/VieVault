@@ -3,6 +3,12 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
     <form method="post">
         {% if error %}
             {% if error.messageKey == 'Invalid CSRF token.' %}
@@ -40,3 +46,4 @@
         </button>
     </form>
 {% endblock %}
+
