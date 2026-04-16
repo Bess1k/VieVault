@@ -53,6 +53,9 @@ class Beneficiary
     #[ORM\OneToMany(targetEntity: VaultElement::class, mappedBy: 'beneficiary')]
     private Collection $vaultElements;
 
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $idDocPath = null;
+
     public function __construct()
     {
         $this->vaultElements = new ArrayCollection();
@@ -209,6 +212,18 @@ class Beneficiary
                 $vaultElement->setBeneficiary(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIdDocPath(): ?string
+    {
+        return $this->idDocPath;
+    }
+
+    public function setIdDocPath(?string $idDocPath): static
+    {
+        $this->idDocPath = $idDocPath;
 
         return $this;
     }

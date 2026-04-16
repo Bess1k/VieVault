@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Soumettre un justificatif{% endblock %}
+{% block title %}Soumettre les justificatifs{% endblock %}
 
 {% block body %}
 <div class="container mt-4">
@@ -8,8 +8,11 @@
 
     <div class="alert alert-info">
         Bonjour <strong>{{ beneficiary.firstname }} {{ beneficiary.lastname }}</strong>,
-        vous devez soumettre un justificatif de décès (acte de décès, certificat médical)
-        pour que le Notaire puisse valider votre demande.
+        vous devez soumettre deux documents pour que le Notaire puisse valider votre demande :
+        <ul class="mb-0 mt-2">
+            <li>Un <strong>acte de décès officiel</strong> du titulaire du coffre</li>
+            <li>Une <strong>pièce d'identité</strong> à votre nom (carte d'identité, passeport)</li>
+        </ul>
     </div>
 
     {% for message in app.flashes('danger') %}
@@ -18,8 +21,12 @@
 
     <form method="post" enctype="multipart/form-data">
         <div class="mb-3">
-            <label for="justificatif" class="form-label">Justificatif de décès (PDF, JPG, PNG)</label>
-            <input type="file" name="justificatif" id="justificatif" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+            <label for="death_cert" class="form-label">Acte de décès (PDF, JPG, PNG)</label>
+            <input type="file" name="death_cert" id="death_cert" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+        </div>
+        <div class="mb-3">
+            <label for="id_doc" class="form-label">Pièce d'identité (PDF, JPG, PNG)</label>
+            <input type="file" name="id_doc" id="id_doc" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
         </div>
         <button type="submit" class="btn btn-primary">Soumettre</button>
     </form>

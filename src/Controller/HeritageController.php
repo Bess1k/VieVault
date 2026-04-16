@@ -24,23 +24,62 @@ final class HeritageController extends AbstractController
         }
 
         if ($request->isMethod('POST')) {
-            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile|null $file */
-            $file = $request->files->get('justificatif');
+            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile|null $deathCert */
+            $deathCert = $request->files->get('death_cert');
+            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile|null $idDoc */
+            $idDoc = $request->files->get('id_doc');
 
-            if ($file) {
-                $filename = $fileUploader->upload($file);
-                $beneficiary->setSubmittedDocPath($filename);
+            if ($deathCert && $idDoc) {
+                // Upload acte de décès
+                $deathCertFilename = $fileUploader->upload($deathCert);
+                $beneficiary->setSubmittedDocPath($deathCertFilename);
+
+                // Upload pièce d'identité
+                $idDocFilename = $fileUploader->upload($idDoc);
+                $beneficiary->setIdDocPath($idDocFilename);
+
                 $beneficiary->setValidationStatus('EN_ATTENTE');
                 $em->flush();
 
                 return $this->render('heritage/submitted.html.twig');
             }
 
-            $this->addFlash('danger', 'Veuillez sélectionner un fichier.');
+            $this->addFlash('danger', 'Veuillez sélectionner les deux documents.');
         }
 
         return $this->render('heritage/submit.html.twig', [
             'beneficiary' => $beneficiary,
+        ]);
+    }
+
+    // Accès aux données léguées via token (envoyé par email après validation du Notaire)
+    #[Route('/access/{token}', name: 'app_heritage_access')]
+    public function access(string $token, \App\Repository\BeneficiaryRepository $repo): Response
+    {
+        $beneficiary = $repo->findOneBy(['accessToken' => $token]);
+
+        $elements = [];
+        $error = null;
+
+        if (!$beneficiary) {
+            $error = 'invalid';
+        } elseif ($beneficiary->getTokenExpiresAt() < new \DateTime()) {
+            $error = 'expired';
+        } elseif ($beneficiary->getValidationStatus() !== 'APPROUVE') {
+            $error = 'not_approved';
+        } else {
+            // Tout est OK : récupérer les éléments légués
+            foreach ($beneficiary->getCreatedBy()->getVaultElements() as $el) {
+                if ($el->isHeritage() && $el->getBeneficiary() === $beneficiary) {
+                    $elements[] = $el;
+                }
+            }
+        }
+
+        return $this->render('heritage/access.html.twig', [
+            'beneficiary' => $beneficiary,
+            'elements' => $elements,
+            'error' => $error,
         ]);
     }
 }

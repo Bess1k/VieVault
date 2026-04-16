@@ -109,7 +109,7 @@ class DeadManSwitchCommand extends Command
                             '<h3>Que faire ?</h3>' .
                             '<ol>' .
                             '<li>Cliquez sur le lien ci-dessous pour accéder à votre espace personnel.</li>' .
-                            '<li>Téléversez un justificatif de décès (acte de décès, certificat médical).</li>' .
+                            '<li>Téléversez un acte de décès officiel.</li>' .
                             '<li>Un Notaire validera votre demande et votre identité.</li>' .
                             '<li>Après validation, vous recevrez un second email avec un lien d\'accès aux données léguées.</li>' .
                             '</ol>' .

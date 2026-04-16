@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accès aux données léguées{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    {% if error == 'invalid' %}
+        <div class="text-center mt-5">
+            <h1 class="text-danger">Token invalide</h1>
+            <p class="text-muted">Le lien d'accès n'est pas valide.</p>
+        </div>
+    {% elseif error == 'expired' %}
+        <div class="text-center mt-5">
+            <h1 class="text-warning">Token expiré</h1>
+            <p class="text-muted">Le lien d'accès a expiré (validité 30 jours). Contactez le Notaire.</p>
+        </div>
+    {% elseif error == 'not_approved' %}
+        <div class="text-center mt-5">
+            <h1 class="text-warning">Accès non disponible</h1>
+            <p class="text-muted">Votre demande n'a pas encore été approuvée par le Notaire.</p>
+        </div>
+    {% else %}
+        <h1>Données léguées</h1>
+        <p class="text-muted">
+            Bonjour <strong>{{ beneficiary.firstname }} {{ beneficiary.lastname }}</strong>,
+            voici les données qui vous ont été léguées par
+            <strong>{{ beneficiary.createdBy.firstname }} {{ beneficiary.createdBy.lastname }}</strong>.
+        </p>
+
+        {% if elements|length == 0 %}
+            <div class="alert alert-info">Aucun élément n'a été légué spécifiquement à vous.</div>
+        {% else %}
+            {% for el in elements %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ el.title }}</h5>
+                        <span class="badge bg-primary">{{ el.type }}</span>
+                        <hr>
+                        <p><strong>Contenu :</strong></p>
+                        <pre class="bg-light p-3">{{ el.content }}</pre>
+                        {% if el.files|length > 0 %}
+                            <p><strong>Fichiers joints :</strong></p>
+                            <ul>
+                                {% for file in el.files %}
+                                    <li>
+                                        <a href="{{ asset('uploads/vault/' ~ file.filename) }}" target="_blank">
+                                            {{ file.originalName }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

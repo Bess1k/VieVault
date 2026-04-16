@@ -29,12 +29,16 @@
                         </div>
                         <div class="col-md-6">
                             <p><strong>Propriétaire du coffre :</strong> {{ b.createdBy.firstname }} {{ b.createdBy.lastname }}</p>
-                            <p><strong>Justificatif :</strong>
-                                <a href="#" class="text-primary">Voir le document</a>
-                            </p>
-                            <p><strong>Statut :</strong>
-                                <span class="badge bg-warning">En attente</span>
-                            </p>
+                            <p><strong>Acte de décès :</strong>
+                            <a href="{{ asset('uploads/vault/' ~ b.submittedDocPath) }}" target="_blank" class="text-primary">Voir le document</a>
+                        </p>
+                        <p><strong>Pièce d'identité :</strong>
+                            {% if b.idDocPath %}
+                                <a href="{{ asset('uploads/vault/' ~ b.idDocPath) }}" target="_blank" class="text-primary">Voir le document</a>
+                            {% else %}
+                                <span class="text-muted">Non soumis</span>
+                            {% endif %}
+                        </p>
                         </div>
                     </div>
                     <div class="mt-3">
