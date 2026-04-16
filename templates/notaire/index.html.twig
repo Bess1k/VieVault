@@ -61,5 +61,31 @@
             </div>
         {% endfor %}
     {% endif %}
+
+    {# Historique des demandes traitées #}
+    {% if approuvees|length > 0 or refusees|length > 0 %}
+        <hr>
+        <h2 class="mt-4">Historique des demandes</h2>
+
+        {% for b in approuvees %}
+            <div class="card mb-2 border-success">
+                <div class="card-body">
+                    <span class="badge bg-success">Approuvée</span>
+                    <strong>{{ b.firstname }} {{ b.lastname }}</strong> — {{ b.email }}
+                    (Coffre de {{ b.createdBy.firstname }} {{ b.createdBy.lastname }})
+                </div>
+            </div>
+        {% endfor %}
+
+        {% for b in refusees %}
+            <div class="card mb-2 border-danger">
+                <div class="card-body">
+                    <span class="badge bg-danger">Refusée</span>
+                    <strong>{{ b.firstname }} {{ b.lastname }}</strong> — {{ b.email }}
+                    (Coffre de {{ b.createdBy.firstname }} {{ b.createdBy.lastname }})
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
 </div>
 {% endblock %}

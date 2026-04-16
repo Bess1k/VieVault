@@ -23,18 +23,20 @@ final class NotaireController extends AbstractController
     #[Route('', name: 'app_notaire')]
     public function index(BeneficiaryRepository $repo): Response
     {
-        // Récupérer tous les bénéficiaires ayant soumis un justificatif
-        $demandes = $repo->findBy(
-            ['validationStatus' => 'EN_ATTENTE'],
-        );
-
-        // Filtrer uniquement ceux qui ont un document soumis
+        // Demandes en attente
+        $demandes = $repo->findBy(['validationStatus' => 'EN_ATTENTE']);
         $demandesAvecDoc = array_filter($demandes, function ($b) {
             return $b->getSubmittedDocPath() !== null;
         });
 
+        // Historique des demandes traitées
+        $approuvees = $repo->findBy(['validationStatus' => 'APPROUVE']);
+        $refusees = $repo->findBy(['validationStatus' => 'REFUSE']);
+
         return $this->render('notaire/index.html.twig', [
             'demandes' => $demandesAvecDoc,
+            'approuvees' => $approuvees,
+            'refusees' => $refusees,
         ]);
     }
 
