@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\VaultElementRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -41,6 +43,17 @@ class VaultElement
 
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $filePath = null;
+
+    /**
+     * @var Collection<int, VaultFile>
+     */
+    #[ORM\OneToMany(targetEntity: VaultFile::class, mappedBy: 'vaultElement', orphanRemoval: true)]
+    private Collection $files;
+
+    public function __construct()
+    {
+        $this->files = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -151,6 +164,36 @@ class VaultElement
     public function setFilePath(?string $filePath): static
     {
         $this->filePath = $filePath;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, VaultFile>
+     */
+    public function getFiles(): Collection
+    {
+        return $this->files;
+    }
+
+    public function addFile(VaultFile $file): static
+    {
+        if (!$this->files->contains($file)) {
+            $this->files->add($file);
+            $file->setVaultElement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFile(VaultFile $file): static
+    {
+        if ($this->files->removeElement($file)) {
+            // set the owning side to null (unless already changed)
+            if ($file->getVaultElement() === $this) {
+                $file->setVaultElement(null);
+            }
+        }
 
         return $this;
     }

@@ -3,10 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\VaultElement;
+use App\Entity\VaultFile;
 use App\Form\VaultElementType;
 use App\Service\AuditLogger;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,9 +45,9 @@ final class VaultController extends AbstractController
         ]);
     }
 
-        // Ajouter un nouvel élément au coffre
+    // Ajouter un nouvel élément au coffre
     #[Route('/new', name: 'app_vault_new')]
-    public function new(Request $request, EntityManagerInterface $em, AuditLogger $auditLogger): Response
+    public function new(Request $request, EntityManagerInterface $em, AuditLogger $auditLogger, FileUploader $fileUploader): Response
     {
         $element = new VaultElement();
         $form = $this->createForm(VaultElementType::class, $element, [
@@ -55,10 +58,29 @@ final class VaultController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Associer l'élément à l'utilisateur connecté
             $element->setCreatedBy($this->getUser());
-            // Date de création automatique
+            // Date de création automatique (DateTime pour VaultElement)
             $element->setCreatedAt(new \DateTime());
 
             $em->persist($element);
+
+            // Gérer l'upload de fichier(s)
+            $uploadedFiles = $form->get('uploadedFile')->getData();
+            if ($uploadedFiles) {
+                foreach ($uploadedFiles as $uploadedFile) {
+                    $newFilename = $fileUploader->upload($uploadedFile);
+
+                    $vaultFile = new VaultFile();
+                    $vaultFile->setFilename($newFilename);
+                    $vaultFile->setOriginalName($uploadedFile->getClientOriginalName());
+                    $vaultFile->setMimeType($uploadedFile->getClientMimeType());
+                    // DateTimeImmutable pour VaultFile
+                    $vaultFile->setUploadedAt(new \DateTimeImmutable());
+                    $vaultFile->setVaultElement($element);
+
+                    $em->persist($vaultFile);
+                }
+            }
+
             $em->flush();
             $auditLogger->log($this->getUser(), 'CREATE');
 
@@ -74,7 +96,7 @@ final class VaultController extends AbstractController
 
     // Modifier un élément existant
     #[Route('/{id}/edit', name: 'app_vault_edit')]
-    public function edit(VaultElement $element, Request $request, EntityManagerInterface $em, AuditLogger $auditLogger): Response
+    public function edit(VaultElement $element, Request $request, EntityManagerInterface $em, AuditLogger $auditLogger, FileUploader $fileUploader): Response
     {
         // Vérifier que l'élément appartient à l'utilisateur connecté
         if ($element->getCreatedBy() !== $this->getUser()) {
@@ -87,8 +109,26 @@ final class VaultController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Mise à jour de la date de modification
+            // Mise à jour de la date de modification (DateTime pour VaultElement)
             $element->setUpdatedAt(new \DateTime());
+
+            // Gérer l'upload de nouveaux fichiers (ajout, pas remplacement)
+            $uploadedFiles = $form->get('uploadedFile')->getData();
+            if ($uploadedFiles) {
+                foreach ($uploadedFiles as $uploadedFile) {
+                    $newFilename = $fileUploader->upload($uploadedFile);
+
+                    $vaultFile = new VaultFile();
+                    $vaultFile->setFilename($newFilename);
+                    $vaultFile->setOriginalName($uploadedFile->getClientOriginalName());
+                    $vaultFile->setMimeType($uploadedFile->getClientMimeType());
+                    // DateTimeImmutable pour VaultFile
+                    $vaultFile->setUploadedAt(new \DateTimeImmutable());
+                    $vaultFile->setVaultElement($element);
+
+                    $em->persist($vaultFile);
+                }
+            }
 
             $em->flush();
             $auditLogger->log($this->getUser(), 'UPDATE');
@@ -105,7 +145,7 @@ final class VaultController extends AbstractController
 
     // Supprimer un élément
     #[Route('/{id}/delete', name: 'app_vault_delete', methods: ['POST'])]
-    public function delete(VaultElement $element, Request $request, EntityManagerInterface $em, AuditLogger $auditLogger): Response
+    public function delete(VaultElement $element, Request $request, EntityManagerInterface $em, AuditLogger $auditLogger, FileUploader $fileUploader): Response
     {
         // Vérifier que l'élément appartient à l'utilisateur connecté
         if ($element->getCreatedBy() !== $this->getUser()) {
@@ -114,6 +154,11 @@ final class VaultController extends AbstractController
 
         // Vérification du token CSRF pour la sécurité
         if ($this->isCsrfTokenValid('delete' . $element->getId(), $request->request->get('_token'))) {
+            // Supprimer tous les fichiers associés du disque
+            foreach ($element->getFiles() as $file) {
+                $fileUploader->remove($file->getFilename());
+            }
+
             $em->remove($element);
             $em->flush();
             $auditLogger->log($this->getUser(), 'DELETE');
@@ -121,5 +166,29 @@ final class VaultController extends AbstractController
         }
 
         return $this->redirectToRoute('app_vault');
+    }
+
+    // Supprimer un fichier individuel d'un élément
+    #[Route('/file/{id}/delete', name: 'app_vault_file_delete', methods: ['POST'])]
+    public function deleteFile(\App\Entity\VaultFile $vaultFile, Request $request, EntityManagerInterface $em, FileUploader $fileUploader): Response
+    {
+        // Vérifier que le fichier appartient à l'utilisateur connecté
+        if ($vaultFile->getVaultElement()->getCreatedBy() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        // Vérification du token CSRF
+        if ($this->isCsrfTokenValid('delete_file' . $vaultFile->getId(), $request->request->get('_token'))) {
+            // Supprimer le fichier du disque
+            $fileUploader->remove($vaultFile->getFilename());
+
+            // Supprimer l'entrée de la base
+            $em->remove($vaultFile);
+            $em->flush();
+
+            $this->addFlash('success', 'Fichier supprimé.');
+        }
+
+        return $this->redirectToRoute('app_vault_edit', ['id' => $vaultFile->getVaultElement()->getId()]);
     }
 }

@@ -13,24 +13,26 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Entity\Beneficiary;
 use App\Repository\BeneficiaryRepository;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 
 class VaultElementType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            // Titre de l'élément (ex: "Code coffre banque", "Wallet Crypto")
+            // Titre de l'élément 
             ->add('title', TextType::class, [
                 'label' => 'Titre',
             ])
             // Type de l'élément : menu déroulant avec les catégories définies
             ->add('type', ChoiceType::class, [
-                'label' => 'Type',
-                'choices' => [
-                    'Code' => 'CODE',
-                    'Document' => 'DOCUMENT',
+                'label'     => 'Type',
+                'choices'   => [
+                    'Code'          => 'CODE',
+                    'Document'      => 'DOCUMENT',
                     'Cryptomonnaie' => 'CRYPTO',
-                    'Mot de passe' => 'MOT_DE_PASSE',
+                    'Mot de passe'  => 'MOT_DE_PASSE',
                 ],
             ])
             // Contenu de l'élément : zone de texte large
@@ -39,22 +41,33 @@ class VaultElementType extends AbstractType
             ])
             // Cocher si cet élément doit être transmis aux bénéficiaires
             ->add('isHeritage', CheckboxType::class, [
-                'label' => 'Transmissible aux bénéficiaires',
-                'required' => false,
+                'label'     => 'Transmissible aux bénéficiaires',
+                'required'  => false,
             ])
             ->add('beneficiary', EntityType::class, [
                 'class' => Beneficiary::class,
                 'choice_label' => function (Beneficiary $b) {
                     return $b->getFirstname() . ' ' . $b->getLastname();
                 },
-                'label' => 'Bénéficiaire désigné',
-                'required' => false,
-                'placeholder' => '-- Aucun (élément privé) --',
+                'label'         => 'Bénéficiaire désigné',
+                'required'      => false,
+                'placeholder'   => '-- Aucun (élément privé) --',
                 'query_builder' => function (BeneficiaryRepository $repo) use ($options) {
                     return $repo->createQueryBuilder('b')
                         ->where('b.createdBy = :user')
                         ->setParameter('user', $options['user']);
                 },
+            ])
+
+            // Upload de fichier : documents PDF, images JPG/PNG
+            ->add('uploadedFile', FileType::class, [
+                'label'      => 'Fichiers joints',
+                'mapped'     => false,
+                'required'   => false,
+                'multiple'   => true,
+                'attr' => [
+                    'accept' => '.pdf,.jpg,.jpeg,.png,.txt',
+                ],
             ])
         ;
     }
@@ -63,7 +76,7 @@ class VaultElementType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => VaultElement::class,
-            'user' => null,
+            'user'       => null,
         ]);
     }
 }

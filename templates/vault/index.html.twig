@@ -26,18 +26,33 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ element.title }}</h5>
                             <span class="badge bg-primary">{{ element.type }}</span>
+
                             {% if element.isHeritage %}
                                 <span class="badge bg-warning">Héritage</span>
                                 {% if element.beneficiary %}
                                     <span class="badge bg-info">→ {{ element.beneficiary.firstname }} {{ element.beneficiary.lastname }}</span>
                                 {% endif %}
                             {% endif %}
+
                             <p class="card-text mt-2 text-muted">
                                 Ajouté le {{ element.createdAt|date('d/m/Y à H:i') }}
+
                                 {% if element.updatedAt %}
                                     <br>Modifié le {{ element.updatedAt|date('d/m/Y à H:i') }}
                                 {% endif %}
+                                
                             </p>
+
+                            {% if element.files|length > 0 %}
+                                <p class="mt-1">
+                                    {% for file in element.files %}
+                                        <a href="{{ asset('uploads/vault/' ~ file.filename) }}" target="_blank" class="badge bg-secondary me-1">
+                                            {{ file.originalName }}
+                                        </a>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+
                         </div>
                         <div class="card-footer d-flex justify-content-between">
                             <a href="{{ path('app_vault_edit', {id: element.id}) }}" class="btn btn-sm btn-outline-secondary">Modifier</a>

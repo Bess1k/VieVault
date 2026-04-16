@@ -10,26 +10,41 @@
         {{ form_row(form.beneficiary) }}
     </div>
 
+    {# Upload de nouveaux fichiers #}
+    {{ form_row(form.uploadedFile) }}
+
     <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
     <a href="{{ path('app_vault') }}" class="btn btn-secondary mt-3">Annuler</a>
 {{ form_end(form) }}
 
-{# Script pour afficher/masquer la liste des bénéficiaires
-   selon l'état de la case "Transmissible aux bénéficiaires" #}
+{# Liste des fichiers existants #}
+{% if form.vars.data.id and form.vars.data.files|length > 0 %}
+    <div class="mb-3">
+        <label class="form-label fw-bold">Fichiers existants</label>
+        {% for file in form.vars.data.files %}
+            <div class="d-flex align-items-center mb-1">
+                <a href="{{ asset('uploads/vault/' ~ file.filename) }}" target="_blank" class="me-2">
+                    {{ file.originalName }}
+                </a>
+                <form method="post" action="{{ path('app_vault_file_delete', {id: file.id}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce fichier ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_file' ~ file.id) }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+    <hr>
+{% endif %}
+
+{# Script pour afficher/masquer la liste des bénéficiaires #}
 <script>
-    // Récupérer la case à cocher "Transmissible"
     const checkbox = document.getElementById('{{ form.isHeritage.vars.id }}');
-    // Récupérer le conteneur de la liste des bénéficiaires
     const beneficiaryField = document.getElementById('beneficiary-field');
 
-    // Fonction qui affiche ou masque la liste selon l'état de la case
     function toggleBeneficiary() {
         beneficiaryField.style.display = checkbox.checked ? 'block' : 'none';
     }
 
-    // Vérifier l'état au chargement de la page (utile en mode édition)
     toggleBeneficiary();
-
-    // Écouter les changements de la case à cocher
     checkbox.addEventListener('change', toggleBeneficiary);
 </script>
