@@ -24,3 +24,8 @@ services:
     App\Service\FileUploader:
         arguments:
             $uploadDirectory: '%kernel.project_dir%/public/uploads/vault'
+
+
+    App\Service\VaultEncryptor:
+        arguments:
+            $appSecret: '%kernel.secret%'

@@ -7,6 +7,7 @@ use App\Entity\VaultFile;
 use App\Form\VaultElementType;
 use App\Service\AuditLogger;
 use App\Service\FileUploader;
+use App\Service\VaultEncryptor;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -22,12 +23,11 @@ final class VaultController extends AbstractController
 {
     // Liste des éléments du coffre de l'utilisateur connecté
     #[Route('', name: 'app_vault')]
-    public function index(RequestStack $requestStack): Response
+    public function index(RequestStack $requestStack, VaultEncryptor $encryptor): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        // Mode panique : afficher de faux éléments
         if ($requestStack->getSession()->get('panic_mode', false)) {
             $fakeElements = [
                 ['title' => 'Liste de courses', 'type' => 'NOTE', 'isHeritage' => false, 'createdAt' => new \DateTime('-5 days')],
@@ -40,14 +40,21 @@ final class VaultController extends AbstractController
             ]);
         }
 
+        // Déchiffrer le contenu pour l'affichage
+        $elements = $user->getVaultElements();
+        foreach ($elements as $el) {
+            $el->setContent($encryptor->decrypt($el->getContent()));
+        }
+
         return $this->render('vault/index.html.twig', [
-            'vaultElements' => $user->getVaultElements(),
+            'vaultElements' => $elements,
         ]);
     }
 
     // Ajouter un nouvel élément au coffre
     #[Route('/new', name: 'app_vault_new')]
-    public function new(Request $request, EntityManagerInterface $em, AuditLogger $auditLogger, FileUploader $fileUploader): Response
+    public function new(Request $request, EntityManagerInterface $em, AuditLogger $auditLogger, 
+    FileUploader $fileUploader, VaultEncryptor $encryptor): Response
     {
         $element = new VaultElement();
         $form = $this->createForm(VaultElementType::class, $element, [
@@ -60,6 +67,9 @@ final class VaultController extends AbstractController
             $element->setCreatedBy($this->getUser());
             // Date de création automatique (DateTime pour VaultElement)
             $element->setCreatedAt(new \DateTime());
+
+            // Chiffrer le contenu avant stockage
+            $element->setContent($encryptor->encrypt($element->getContent()));
 
             $em->persist($element);
 
@@ -96,13 +106,17 @@ final class VaultController extends AbstractController
 
     // Modifier un élément existant
     #[Route('/{id}/edit', name: 'app_vault_edit')]
-    public function edit(VaultElement $element, Request $request, EntityManagerInterface $em, AuditLogger $auditLogger, FileUploader $fileUploader): Response
+    public function edit(VaultElement $element, Request $request, EntityManagerInterface $em, AuditLogger $auditLogger, 
+        FileUploader $fileUploader, VaultEncryptor $encryptor): Response
     {
         // Vérifier que l'élément appartient à l'utilisateur connecté
         if ($element->getCreatedBy() !== $this->getUser()) {
             throw $this->createAccessDeniedException();
         }
 
+        // Déchiffrer le contenu pour l'affichage dans le formulaire
+        $element->setContent($encryptor->decrypt($element->getContent()));
+        
         $form = $this->createForm(VaultElementType::class, $element, [
             'user' => $this->getUser(),
         ]);
@@ -130,6 +144,9 @@ final class VaultController extends AbstractController
                 }
             }
 
+            // Chiffrer le contenu avant stockage
+            $element->setContent($encryptor->encrypt($element->getContent()));
+            
             $em->flush();
             $auditLogger->log($this->getUser(), 'UPDATE');
 

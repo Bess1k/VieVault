@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Beneficiary;
 use App\Service\FileUploader;
+use App\Service\VaultEncryptor;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,7 +55,7 @@ final class HeritageController extends AbstractController
 
     // Accès aux données léguées via token (envoyé par email après validation du Notaire)
     #[Route('/access/{token}', name: 'app_heritage_access')]
-    public function access(string $token, \App\Repository\BeneficiaryRepository $repo): Response
+    public function access(string $token, \App\Repository\BeneficiaryRepository $repo, VaultEncryptor $encryptor): Response
     {
         $beneficiary = $repo->findOneBy(['accessToken' => $token]);
 
@@ -68,9 +69,11 @@ final class HeritageController extends AbstractController
         } elseif ($beneficiary->getValidationStatus() !== 'APPROUVE') {
             $error = 'not_approved';
         } else {
-            // Tout est OK : récupérer les éléments légués
+            // Récupérer et déchiffrer les éléments légués
             foreach ($beneficiary->getCreatedBy()->getVaultElements() as $el) {
                 if ($el->isHeritage() && $el->getBeneficiary() === $beneficiary) {
+                    // Déchiffrer le contenu pour l'affichage
+                    $el->setContent($encryptor->decrypt($el->getContent()));
                     $elements[] = $el;
                 }
             }
