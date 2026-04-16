@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Soumettre un justificatif{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Protocole d'héritage — VieVault</h1>
+
+    <div class="alert alert-info">
+        Bonjour <strong>{{ beneficiary.firstname }} {{ beneficiary.lastname }}</strong>,
+        vous devez soumettre un justificatif de décès (acte de décès, certificat médical)
+        pour que le Notaire puisse valider votre demande.
+    </div>
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="justificatif" class="form-label">Justificatif de décès (PDF, JPG, PNG)</label>
+            <input type="file" name="justificatif" id="justificatif" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Soumettre</button>
+    </form>
+</div>
+{% endblock %}

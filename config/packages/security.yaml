@@ -26,6 +26,9 @@ security:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 
+        - { path: ^/heritage, roles: PUBLIC_ACCESS } # Accès public pour bénéficiaires
+    
+
 when@test:
     security:
         password_hashers:
