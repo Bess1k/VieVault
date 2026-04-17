@@ -82,6 +82,10 @@ final class NotaireController extends AbstractController
             }
 
             $auditLogger->log($this->getUser(), 'HERITAGE_APPROVED');
+
+            // Log aussi pour le propriétaire du coffre
+            $auditLogger->log($beneficiary->getCreatedBy(), 'HERITAGE_APPROVED');
+
             $this->addFlash('success', 'Demande approuvée. Email envoyé au bénéficiaire.');
         }
 
@@ -102,6 +106,9 @@ final class NotaireController extends AbstractController
 
             // Enregistrer dans les logs
             $auditLogger->log($this->getUser(), 'HERITAGE_REJECTED');
+            
+            // Log aussi pour le propriétaire du coffre
+            $auditLogger->log($beneficiary->getCreatedBy(), 'HERITAGE_REJECTED');
 
             $this->addFlash('success', 'Demande refusée.');
         }

@@ -24,6 +24,12 @@ class LoginListener
         // Mettre à jour la date de dernière connexion
         $user->setLastLoginAt(new \DateTime());
 
+        // Réactiver le compte si inactif (l'utilisateur est de retour)
+        if ($user->getStatus() === 'INACTIVE') {
+            $user->setStatus('ACTIVE');
+            $this->auditLogger->log($user, 'ACCOUNT_REACTIVATED');
+        }
+
         // Enregistrer la connexion dans les logs d'audit
         $this->auditLogger->log($user, 'LOGIN');
 
