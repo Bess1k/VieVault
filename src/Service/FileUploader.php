@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Service qui gère l'upload, la compression et la suppression de fichiers
+ * Utilisé pour les documents et images du coffre-fort
  */
 class FileUploader
 {
@@ -23,7 +24,7 @@ class FileUploader
         // Récupérer le nom du fichier sans l'extension
         $strBaseFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
 
-        // Générer un nom unique
+        // Générer un nom unique : nom original + identifiant unique + extension
         $strNewFilename = $strBaseFileName . uniqid() . '.' . $file->guessExtension();
 
         // Déplacer le fichier dans le répertoire d'upload
@@ -37,24 +38,23 @@ class FileUploader
     }
 
     /**
-     * Compresser une image avec GD (qualité réduite pour économiser l'espace)
+     * Compresser une image avec la bibliothèque GD de PHP
+     * Réduit la qualité pour économiser l'espace disque
      */
     private function compressImage(string $filePath, string $mimeType): void
     {
-        // Ne compresser que les images JPEG et PNG
+        // Compresser uniquement les images JPEG et PNG
         if ($mimeType === 'image/jpeg' || $mimeType === 'image/jpg') {
             $image = imagecreatefromjpeg($filePath);
             if ($image) {
                 // Qualité 75% (bon compromis taille/qualité)
                 imagejpeg($image, $filePath, 75);
-                imagedestroy($image);
             }
         } elseif ($mimeType === 'image/png') {
             $image = imagecreatefrompng($filePath);
             if ($image) {
-                // Compression PNG niveau 6 (0=aucune, 9=max)
+                // Compression PNG niveau 6 (0=aucune, 9=maximum)
                 imagepng($image, $filePath, 6);
-                imagedestroy($image);
             }
         }
     }
