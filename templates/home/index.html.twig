@@ -1,13 +1,129 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}VieVault - Accueil{% endblock %}
+{% block title %}VieVault — Coffre-fort numérique & héritage{% endblock %}
 
 {% block body %}
-
-    <div class="container mt-5 text-center">
-        <h1>Bienvenue sur VieVault</h1>
-        <p>Sécurisez aujourd'hui, transmettez demain.</p>
-        <a href="#" class="btn btn-success">Bootstrap est la !</a>
+{# Section Hero #}
+<div class="d-flex align-items-center justify-content-center text-center hero-section">
+    <div class="container">
+        <img src="{{ asset('images/logo.png') }}" alt="VieVault" height="120" class="mb-4">
+        <h1 class="display-4 fw-bold hero-title">VieVault</h1>
+        <p class="lead mb-4 hero-slogan"><span>Sécurisez aujourd'hui,</span> transmettez demain.</p>
+        <p class="mb-4 text-muted">
+            Votre coffre-fort numérique personnel pour protéger vos données et organiser leur transmission à vos proches.
+        </p>
+        {% if not app.user %}
+            <a href="{{ path('app_register') }}" class="btn btn-primary btn-lg me-2">S'inscrire</a>
+            <a href="{{ path('app_login') }}" class="btn btn-outline-primary btn-lg">Se connecter</a>
+        {% else %}
+            <a href="{{ path('app_dashboard') }}" class="btn btn-primary btn-lg">Accéder à mon coffre</a>
+        {% endif %}
     </div>
+</div>
 
+{# Section Fonctionnalités #}
+<div class="container mb-5 mt-5">
+    <h2 class="text-center mb-4">Comment ça fonctionne ?</h2>
+    <div class="row g-4 mt-5">
+        {# Carte 1 : Coffre-fort #}
+        <div class="col-md-4">
+            <div class="card h-100 text-center border-0 shadow-sm card-hover">
+                <div class="card-body">
+                    <img src="{{ asset('images/coffre.png') }}" alt="Coffre-fort" height="80" class="mb-3">
+                    <h5 class="card-title">Coffre-fort sécurisé</h5>
+                    <p class="card-text text-muted">
+                        Stockez vos mots de passe, codes, documents et clés de cryptomonnaies dans un espace hautement sécurisé.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {# Carte 2 : Héritage #}
+        <div class="col-md-4">
+           <div class="card h-100 text-center border-0 shadow-sm card-hover">
+                <div class="card-body">
+                    <img src="{{ asset('images/heritage.png') }}" alt="Heritage" height="80" class="mb-3">
+                    <h5 class="card-title">Héritage numérique</h5>
+                    <p class="card-text text-muted">
+                        Désignez des bénéficiaires pour chaque élément.
+                        En cas d'inactivité prolongée, vos données sont transmises en toute sécurité.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {# Carte 3 : Sécurité #}
+        <div class="col-md-4">
+            <div class="card h-100 text-center border-0 shadow-sm card-hover">
+                <div class="card-body">
+                    <img src="{{ asset('images/protection.png') }}" alt="Protection" height="80" class="mb-3">
+                    <h5 class="card-title">Protection avancée</h5>
+                    <p class="card-text text-muted">
+                        Connexion d'urgence discrète, pause vacances, historique des actions et validation légale pour une sécurité maximale.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Section Comment ça marche #}
+<div class="bg-light py-5 mb-5">
+    <div class="container">
+        <h2 class="text-center mb-4">En 4 étapes simples</h2>
+        <div class="row g-4">
+            <div class="col-md-3 text-center etapes">
+                <div class="display-5 fw-bold text-primary mb-2">1</div>
+                <h6>Créez votre compte</h6>
+                <p class="text-muted small">Inscription rapide avec vérification par email.</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="display-5 fw-bold text-primary mb-2">2</div>
+                <h6>Stockez vos données</h6>
+                <p class="text-muted small">Ajoutez codes, documents et mots de passe dans votre coffre chiffré.</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="display-5 fw-bold text-primary mb-2">3</div>
+                <h6>Désignez vos bénéficiaires</h6>
+                <p class="text-muted small">Choisissez qui recevra quoi en cas de besoin.</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="display-5 fw-bold text-primary mb-2">4</div>
+                <h6>Vivez l'esprit tranquille</h6>
+                <p class="text-muted small">Vos données sont protégées et transmises automatiquement.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Section Sécurité #}
+<div class="container mb-5 mt-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h2>Votre sécurité, notre priorité</h2>
+            <ul class="list-unstyled mt-3">
+                <li class="mb-2">&#10003; Chiffrement AES-256-CBC du contenu</li>
+                <li class="mb-2">&#10003; Mot de passe panique avec dashboard leurre</li>
+                <li class="mb-2">&#10003; Alerte SOS silencieuse aux contacts de confiance</li>
+                <li class="mb-2">&#10003; Mode vacances pour suspendre le Dead Man's Switch</li>
+                <li class="mb-2">&#10003; Logs d'audit avec traçabilité complète</li>
+                <li class="mb-2">&#10003; Validation légale par un Notaire</li>
+            </ul>
+        </div>
+        <div class="col-md-6 text-center">
+            <img src="{{ asset('images/logo.png') }}" alt="VieVault Sécurité" height="200" class="opacity-50">
+        </div>
+    </div>
+</div>
+
+{# Call to action final #}
+{% if not app.user %}
+<div class="bg-primary text-white py-5">
+    <div class="container text-center">
+        <h2 class="mb-3">Prêt à sécuriser votre avenir numérique ?</h2>
+        <p class="mb-4">Créez votre compte gratuitement et commencez à protéger vos données.</p>
+        <a href="{{ path('app_register') }}" class="btn btn-light btn-lg">Créer mon compte</a>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
