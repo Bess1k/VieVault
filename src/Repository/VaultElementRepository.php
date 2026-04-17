@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\VaultElement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +17,29 @@ class VaultElementRepository extends ServiceEntityRepository
         parent::__construct($registry, VaultElement::class);
     }
 
-    //    /**
-    //     * @return VaultElement[] Returns an array of VaultElement objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('v')
-    //            ->andWhere('v.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('v.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Rechercher les éléments du coffre d'un utilisateur
+     * Filtrage par titre et/ou par type
+     */
+    public function findByUserWithFilters(User $user, ?string $search = null, ?string $type = null): array
+    {
+        $qb = $this->createQueryBuilder('v')
+            ->where('v.createdBy = :user')
+            ->setParameter('user', $user)
+            ->orderBy('v.createdAt', 'DESC');
 
-    //    public function findOneBySomeField($value): ?VaultElement
-    //    {
-    //        return $this->createQueryBuilder('v')
-    //            ->andWhere('v.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        // Filtre par titre (recherche partielle insensible à la casse)
+        if ($search) {
+            $qb->andWhere('LOWER(v.title) LIKE LOWER(:search)')
+                ->setParameter('search', '%' . $search . '%');
+        }
+
+        // Filtre par type
+        if ($type) {
+            $qb->andWhere('v.type = :type')
+                ->setParameter('type', $type);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

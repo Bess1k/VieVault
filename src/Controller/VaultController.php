@@ -23,11 +23,12 @@ final class VaultController extends AbstractController
 {
     // Liste des éléments du coffre de l'utilisateur connecté
     #[Route('', name: 'app_vault')]
-    public function index(RequestStack $requestStack, VaultEncryptor $encryptor): Response
+    public function index(RequestStack $requestStack, VaultEncryptor $encryptor, Request $request, \App\Repository\VaultElementRepository $repo): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
+        // Mode panique : afficher de faux éléments
         if ($requestStack->getSession()->get('panic_mode', false)) {
             $fakeElements = [
                 ['title' => 'Liste de courses', 'type' => 'NOTE', 'isHeritage' => false, 'createdAt' => new \DateTime('-5 days')],
@@ -40,14 +41,22 @@ final class VaultController extends AbstractController
             ]);
         }
 
+        // Récupérer les paramètres de recherche et filtre
+        $search = $request->query->getString('search');
+        $type = $request->query->getString('type');
+
+        // Rechercher avec filtres
+        $elements = $repo->findByUserWithFilters($user, $search ?: null, $type ?: null);
+
         // Déchiffrer le contenu pour l'affichage
-        $elements = $user->getVaultElements();
         foreach ($elements as $el) {
             $el->setContent($encryptor->decrypt($el->getContent()));
         }
 
         return $this->render('vault/index.html.twig', [
             'vaultElements' => $elements,
+            'search' => $search,
+            'selectedType' => $type,
         ]);
     }
 
@@ -116,7 +125,7 @@ final class VaultController extends AbstractController
 
         // Déchiffrer le contenu pour l'affichage dans le formulaire
         $element->setContent($encryptor->decrypt($element->getContent()));
-        
+
         $form = $this->createForm(VaultElementType::class, $element, [
             'user' => $this->getUser(),
         ]);
