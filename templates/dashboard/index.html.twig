@@ -81,5 +81,16 @@
         </div>
         {% endif %}
 
+        {# Carte : Logs d'audit #}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Logs d'audit</h5>
+                    <p class="text-muted">Historique de vos actions</p>
+                    <a href="{{ path('app_audit_logs') }}" class="btn btn-sm btn-outline-secondary">Consulter</a>
+                </div>
+            </div>
+        </div>
+
 </div>
 {% endblock %}
