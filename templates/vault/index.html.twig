@@ -5,7 +5,10 @@
 {% block body %}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Mon coffre</h1>
+        <div>
+            <h1>Mon coffre</h1>
+            <p class="text-muted mb-0">{{ vaultElements|length }} élément(s) stocké(s)</p>
+        </div>
         <a href="{{ path('app_vault_new') }}" class="btn btn-primary">+ Ajouter un élément</a>
     </div>
 
@@ -13,7 +16,7 @@
         <div class="alert alert-success">{{ message }}</div>
     {% endfor %}
 
-    {# Barre de recherche et filtre par type (méthode GET comme le prof) #}
+    {# Barre de recherche et filtre par type #}
     <form method="GET" class="mb-4">
         <div class="row g-2">
             <div class="col-md-6">
@@ -45,40 +48,48 @@
             {% endif %}
         </div>
     {% else %}
-        <div class="row">
+        <div class="row g-4">
             {% for element in vaultElements %}
-                <div class="col-md-4 mb-3">
-                    <div class="card h-100">
+                <div class="col-md-4">
+                    <div class="card card-hover card-white h-100">
                         <div class="card-body">
-                            <h5 class="card-title">{{ element.title }}</h5>
-                            <span class="badge bg-primary">{{ element.type }}</span>
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0 fw-bolder">{{ element.title }}</h5>
+                                <span class="text-muted small border rounded px-2 py-1">{{ element.type }}</span>
+                            </div>
+
                             {% if element.isHeritage %}
-                                <span class="badge bg-warning">Héritage</span>
-                                {% if element.beneficiary %}
-                                    <span class="badge bg-info">→ {{ element.beneficiary.firstname }} {{ element.beneficiary.lastname }}</span>
-                                {% endif %}
+                                <p class="small mb-2" style="color: #0d6efd;">
+                                    Héritage
+                                    {% if element.beneficiary %}
+                                        → {{ element.beneficiary.firstname }} {{ element.beneficiary.lastname }}
+                                    {% endif %}
+                                </p>
                             {% endif %}
+
                             {% if element.files|length > 0 %}
-                                <p class="mt-1">
+                                <p class="small text-muted mb-2">
                                     {% for file in element.files %}
-                                        <a href="{{ asset('uploads/vault/' ~ file.filename) }}" target="_blank" class="badge bg-secondary me-1">
+                                        <a href="{{ asset('uploads/vault/' ~ file.filename) }}" target="_blank" class="text-muted text-decoration-underline me-1">
                                             {{ file.originalName }}
                                         </a>
                                     {% endfor %}
                                 </p>
                             {% endif %}
-                            <p class="card-text mt-2 text-muted">
-                                Ajouté le {{ element.createdAt|date('d/m/Y à H:i') }}
+
+                            <p class="text-muted small mb-0">
+                                {{ element.createdAt|date('d/m/Y à H:i') }}
                                 {% if element.updatedAt %}
-                                    <br>Modifié le {{ element.updatedAt|date('d/m/Y à H:i') }}
+                                    · modifié le {{ element.updatedAt|date('d/m/Y à H:i') }}
                                 {% endif %}
                             </p>
                         </div>
-                        <div class="card-footer d-flex justify-content-between">
-                            <a href="{{ path('app_vault_edit', {id: element.id}) }}" class="btn btn-sm btn-outline-secondary">Modifier</a>
-                            <form method="post" action="{{ path('app_vault_delete', {id: element.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet élément ?');">
+                        <div class="card-footer bg-transparent">
+                            <a href="{{ path('app_vault_edit', {id: element.id}) }}" class="small" style="color: #0d6efd;">Modifier</a>
+                            <span class="text-muted mx-1">|</span>
+                            <form method="post" action="{{ path('app_vault_delete', {id: element.id}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet élément ?');">
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ element.id) }}">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                                <button type="submit" class="btn btn-link btn-sm p-0 small text-danger text-decoration-none">Supprimer</button>
                             </form>
                         </div>
                     </div>

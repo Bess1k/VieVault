@@ -68,3 +68,7 @@ a {
 .etapes {
     background: linear-gradient(180deg, #f0f4ff 0%, #ffffff 100%);
 }
+
+.card-white {
+    background: white !important;
+}
