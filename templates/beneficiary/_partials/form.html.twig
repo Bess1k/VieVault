@@ -1,11 +1,39 @@
 {# Formulaire réutilisable pour ajout et modification d'un bénéficiaire #}
-{{ form_start(form) }}
-    {{ form_row(form.lastname) }}
-    {{ form_row(form.firstname) }}
-    {{ form_row(form.email) }}
-    {{ form_row(form.birthDate) }}
-    {{ form_row(form.birthPlace) }}
+<div class="card card-white">
+    <div class="card-body">
+        {{ form_start(form) }}
 
-    <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
-    <a href="{{ path('app_beneficiary') }}" class="btn btn-secondary mt-3">Annuler</a>
-{{ form_end(form) }}
+            {# Section : Identité #}
+            <p class="text-uppercase text-muted small fw-bold mb-3">Identité du bénéficiaire</p>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form_row(form.lastname) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_row(form.firstname) }}
+                </div>
+            </div>
+
+            {# Section : Contact #}
+            <p class="text-uppercase text-muted small fw-bold mb-3">Contact</p>
+            {{ form_row(form.email) }}
+
+            {# Section date e lieu de naissance #}
+            <div class="row mt-5">
+                <div class="col-md-6 mb-3">
+                    {{ form_row(form.birthDate) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_row(form.birthPlace) }}
+                </div>
+            </div>
+
+            {# Boutons #}
+            <div class="d-flex gap-2 mt-4 pt-3 border-top">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <a href="{{ path('app_beneficiary') }}" class="btn btn-outline-secondary">Annuler</a>
+            </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>

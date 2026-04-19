@@ -7,12 +7,9 @@
     {# En-tête du dashboard #}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1>Bienvenue, {{ user.firstname }}</h1>
+            <h1>Bienvenue {{ user.firstname }}</h1>
             <p class="text-muted mb-0">Votre espace personnel VieVault</p>
-        </div>
-        <span class="badge bg-{{ user.status == 'ACTIVE' ? 'success' : 'danger' }} fs-6">
-            {{ user.status == 'ACTIVE' ? 'Compte actif' : 'Compte inactif' }}
-        </span>
+        </div>        
     </div>
 
     {# Messages flash #}
@@ -25,8 +22,8 @@
         <div class="col-md-4">
             <div class="card card-hover h-100">
                 <div class="card-body text-center">
-                    <img src="{{ asset('images/coffre.png') }}" alt="Coffre" height="50" class="mb-3">
-                    <h5 class="card-title">Mon coffre</h5>
+                    <img src="{{ asset('images/coffre.png') }}" alt="Coffre" height="100" class="mb-1">
+                    <h5 class="card-title text-uppercase">Mon coffre</h5>
                     <p class="display-6 fw-bold" style="color: #0d6efd;">{{ vaultElements|length }}</p>
                     <p class="text-muted">élément(s) stocké(s)</p>
                     <a href="{{ path('app_vault') }}" class="btn btn-primary btn-sm">Gérer mon coffre</a>
@@ -37,9 +34,9 @@
         {# Carte : Bénéficiaires #}
         <div class="col-md-4">
             <div class="card card-hover h-100">
-                <div class="card-body text-center">
-                    <div class="display-4 mb-3">&#128101;</div>
-                    <h5 class="card-title">Mes bénéficiaires</h5>
+                <div class="card-body text-center">                    
+                    <img src="{{ asset('images/beneficiaires.png') }}" alt="Bénéficiaires" height="100" class="mb-1">
+                    <h5 class="card-title text-uppercase">Mes bénéficiaires</h5>
                     <p class="display-6 fw-bold" style="color: #0d6efd;">{{ beneficiaries|length }}</p>
                     <p class="text-muted">bénéficiaire(s) désigné(s)</p>
                     <a href="{{ path('app_beneficiary') }}" class="btn btn-primary btn-sm">Gérer mes bénéficiaires</a>
@@ -51,8 +48,8 @@
         <div class="col-md-4">
             <div class="card card-hover h-100">
                 <div class="card-body text-center">
-                    <div class="display-4 mb-3">&#9992;</div>
-                    <h5 class="card-title">Mode vacances</h5>
+                    <img src="{{ asset('images/vacance.png') }}" alt="Pause" height="100" class="mb-1">
+                    <h5 class="card-title text-uppercase">Mode vacances</h5>
                     {% if user.isPaused %}
                         <span class="badge bg-warning mb-2">Activé</span>
                         {% if user.pauseUntil %}
@@ -60,14 +57,13 @@
                         {% endif %}
                         <form method="post" action="{{ path('app_vacation_toggle') }}">
                             <input type="hidden" name="_token" value="{{ csrf_token('vacation') }}">
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Désactiver</button>
+                            <button type="submit" class="btn btn-sm btn-outline-success mb-2">Désactiver</button>
                         </form>
                     {% else %}
                         <span class="badge bg-secondary mb-2">Désactivé</span>
-                        <p class="text-muted">Surveillance automatique active</p>
                         <form method="post" action="{{ path('app_vacation_toggle') }}">
                             <input type="hidden" name="_token" value="{{ csrf_token('vacation') }}">
-                            <button type="submit" class="btn btn-sm btn-outline-success">Activer (180 jours)</button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger mt-5">Activer (180 jours)</button>
                         </form>
                     {% endif %}
                 </div>
@@ -80,7 +76,7 @@
             <div class="card card-hover h-100">
                 <div class="card-body text-center">
                     <div class="display-4 mb-3">&#128680;</div>
-                    <h5 class="card-title">Mot de passe panique</h5>
+                    <h5 class="card-title text-uppercase">Mot de passe panique</h5>
                     {% if user.panicPasswordHash %}
                         <span class="badge bg-success mb-2">Configuré</span>
                     {% else %}
@@ -98,7 +94,7 @@
             <div class="card card-hover h-100">
                 <div class="card-body text-center">
                     <div class="display-4 mb-3">&#128203;</div>
-                    <h5 class="card-title">Logs d'audit</h5>
+                    <h5 class="card-title text-uppercase">Logs d'audit</h5>
                     <p class="text-muted">Historique de toutes vos actions</p>
                     <a href="{{ path('app_audit_logs') }}" class="btn btn-sm btn-outline-secondary">Consulter</a>
                 </div>
@@ -110,7 +106,7 @@
             <div class="card card-hover h-100">
                 <div class="card-body text-center">
                     <div class="display-4 mb-3">&#128100;</div>
-                    <h5 class="card-title">Mon profil</h5>
+                    <h5 class="card-title text-uppercase">Mon profil</h5>
                     <p class="text-muted">{{ user.email }}</p>
                     <a href="{{ path('app_profile') }}" class="btn btn-sm btn-outline-secondary">Modifier</a>
                 </div>

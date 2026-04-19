@@ -4,17 +4,20 @@
 
 {% block body %}
 <div class="container mt-4">
-    <h1>Mon profil</h1>
+    <div class="mb-4">
+        <h1>Mon profil</h1>
+        <p class="text-muted mb-0">Gérez vos informations personnelles et la sécurité de votre compte</p>
+    </div>
 
     {% for message in app.flashes('success') %}
         <div class="alert alert-success">{{ message }}</div>
     {% endfor %}
 
-    {# Formulaire de modification du profil #}
-    <div class="card mb-4">
+    {# Section : Informations personnelles #}
+    <div class="card card-white mb-4">
         <div class="card-body">
-            <h5 class="card-title">Informations personnelles</h5>
             <form method="post">
+                <p class="text-uppercase text-muted small fw-bold mb-3">Informations personnelles</p>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="lastname" class="form-label">Nom</label>
@@ -29,37 +32,54 @@
                     <label for="email" class="form-label">Adresse e-mail</label>
                     <input type="email" name="email" id="email" class="form-control" value="{{ user.email }}" required>
                 </div>
-                <div class="mb-3">
-                    <label for="birthPlace" class="form-label">Lieu de naissance</label>
-                    <input type="text" name="birthPlace" id="birthPlace" class="form-control" value="{{ user.birthPlace }}" required>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="birthPlace" class="form-label">Lieu de naissance</label>
+                        <input type="text" name="birthPlace" id="birthPlace" class="form-control" value="{{ user.birthPlace }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Date de naissance</label>
+                        <input type="text" class="form-control" value="{{ user.birthDate|date('d/m/Y') }}" disabled>
+                        <p class="text-muted small mt-1 mb-0">Non modifiable (vérification d'identité)</p>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Date de naissance</label>
-                    <input type="text" class="form-control" value="{{ user.birthDate|date('d/m/Y') }}" disabled>
-                    <div class="form-text">La date de naissance ne peut pas être modifiée (vérification d'identité).</div>
+
+                <div class="d-flex gap-2 mt-3 pt-3 border-top">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary">Retour</a>
                 </div>
-                <button type="submit" class="btn btn-primary">Enregistrer</button>
             </form>
         </div>
     </div>
 
-    {# Liens vers les paramètres de sécurité #}
-    <div class="card mb-4">
+    {# Section : Sécurité #}
+    <div class="card card-white mb-4">
         <div class="card-body">
-            <h5 class="card-title">Sécurité</h5>
-            <a href="{{ path('app_panic_password') }}" class="btn btn-outline-danger">Configurer le mot de passe panique</a>
+            <p class="text-uppercase text-muted small fw-bold mb-3" >Sécurité</p>
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <p class="mb-1 fw-bold">Mot de passe panique</p>
+                    <p class="text-muted small mb-0">Configurez un mot de passe d'urgence pour activer le mode leurre</p>
+                </div>
+                <a href="{{ path('app_panic_password') }}" class="btn btn-outline-danger btn-sm">Configurer</a>
+            </div>
         </div>
     </div>
 
-    {# Suppression du compte #}
-    <div class="card border-danger">
+    {# Section : Zone dangereuse #}
+    <div class="card mb-4 dangerzone">
         <div class="card-body">
-            <h5 class="card-title text-danger">Zone dangereuse</h5>
-            <p class="text-muted">La suppression de votre compte est définitive. Toutes vos données seront effacées.</p>
-            <form method="post" action="{{ path('app_profile_delete') }}" onsubmit="return confirm('Êtes-vous absolument sûr ? Cette action est irréversible.');">
-                <input type="hidden" name="_token" value="{{ csrf_token('delete_account') }}">
-                <button type="submit" class="btn btn-danger">Supprimer mon compte</button>
-            </form>
+            <p class="text-uppercase small fw-bold mb-3 text-danger" >Zone dangereuse</p>
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <p class="mb-1 fw-bold">Supprimer mon compte</p>
+                    <p class="text-muted small mb-0">Cette action est définitive. Toutes vos données seront effacées.</p>
+                </div>
+                <form method="post" action="{{ path('app_profile_delete') }}" onsubmit="return confirm('Êtes-vous absolument sûr ? Cette action est irréversible.');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_account') }}">
+                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
