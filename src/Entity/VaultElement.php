@@ -9,39 +9,41 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VaultElementRepository::class)]
+#[ORM\Table(name: 'vault_elements')]
 class VaultElement
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(name: 'elv_id')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(name: 'elv_title', length: 255)]
     private ?string $title = null;
 
-    #[ORM\Column(length: 20)]
+    #[ORM\Column(name: 'elv_type', length: 20)]
     private ?string $type = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(name: 'elv_content', type: Types::TEXT)]
     private ?string $content = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'elv_is_heritage')]
     private ?bool $isHeritage = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'elv_created_at')]
     private ?\DateTime $createdAt = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(name: 'elv_updated_at', nullable: true)]
     private ?\DateTime $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'vaultElements')]
-    #[ORM\JoinColumn(name: 'created_by_id', referencedColumnName: 'usr_id', nullable: false)]
+    #[ORM\JoinColumn(name: 'elv_user_id', referencedColumnName: 'usr_id', nullable: false)]
     private ?User $createdBy = null;
 
     #[ORM\ManyToOne(inversedBy: 'vaultElements')]
+    #[ORM\JoinColumn(name: 'elv_beneficiary_id', referencedColumnName: 'id', nullable: true)]
     private ?Beneficiary $beneficiary = null;
 
-    #[ORM\Column(length: 500, nullable: true)]
+    #[ORM\Column(name: 'elv_file_path', length: 500, nullable: true)]
     private ?string $filePath = null;
 
     /**

@@ -26,7 +26,7 @@ class VaultFile
     private ?\DateTimeImmutable $uploadedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'files')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'vault_element_id', referencedColumnName: 'elv_id', nullable: false)]
     private ?VaultElement $vaultElement = null;
 
     public function getId(): ?int
