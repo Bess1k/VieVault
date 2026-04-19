@@ -8,47 +8,59 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+// Élément stocké dans le coffre-fort (mot de passe, document, code, etc.)
 #[ORM\Entity(repositoryClass: VaultElementRepository::class)]
-#[ORM\Table(name: 'vault_elements')]
+#[ORM\Table(name: 'vault_elements')] //< nom de table au pluriel selon le dictionnaire MERISE
 class VaultElement
 {
+    // Identifiant unique de l'élément
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'elv_id')]
     private ?int $id = null;
 
+    // Titre donné par l'utilisateur (ex : "Mot de passe Gmail")
     #[ORM\Column(name: 'elv_title', length: 255)]
     private ?string $title = null;
 
+    // Type d'élément : DOCUMENT, MOT_DE_PASSE, CODE, CRYPTO...
     #[ORM\Column(name: 'elv_type', length: 20)]
     private ?string $type = null;
 
+    // Contenu de l'élément (texte, mot de passe, note, etc.)
     #[ORM\Column(name: 'elv_content', type: Types::TEXT)]
     private ?string $content = null;
 
+    // Vrai si l'élément doit être transmis aux bénéficiaires en cas de décès
     #[ORM\Column(name: 'elv_is_heritage')]
     private ?bool $isHeritage = null;
 
+    // Date de création de l'élément
     #[ORM\Column(name: 'elv_created_at')]
     private ?\DateTime $createdAt = null;
 
+    // Date de la dernière modification (null si jamais modifié)
     #[ORM\Column(name: 'elv_updated_at', nullable: true)]
     private ?\DateTime $updatedAt = null;
 
+    // Utilisateur propriétaire de l'élément
     #[ORM\ManyToOne(inversedBy: 'vaultElements')]
     #[ORM\JoinColumn(name: 'elv_user_id', referencedColumnName: 'usr_id', nullable: false)]
     private ?User $createdBy = null;
 
+    // Bénéficiaire qui recevra l'élément en cas d'héritage (optionnel)
     #[ORM\ManyToOne(inversedBy: 'vaultElements')]
-    #[ORM\JoinColumn(name: 'elv_beneficiary_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\JoinColumn(name: 'elv_beneficiary_id', referencedColumnName: 'bnf_id', nullable: true)]
     private ?Beneficiary $beneficiary = null;
 
+    // Ancien champ pour un seul fichier (remplacé par la relation VaultFile)
     #[ORM\Column(name: 'elv_file_path', length: 500, nullable: true)]
     private ?string $filePath = null;
 
     /**
      * @var Collection<int, VaultFile>
      */
+    // Liste des fichiers joints à cet élément (plusieurs possibles)
     #[ORM\OneToMany(targetEntity: VaultFile::class, mappedBy: 'vaultElement', orphanRemoval: true)]
     private Collection $files;
 

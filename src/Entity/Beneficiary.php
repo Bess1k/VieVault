@@ -8,52 +8,68 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+// Entité représentant un bénéficiaire désigné par un utilisateur
+// pour recevoir l'héritage numérique après son décès
 #[ORM\Entity(repositoryClass: BeneficiaryRepository::class)]
+#[ORM\Table(name: 'beneficiaries')] 
 class Beneficiary
 {
+    // Clé primaire 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(name: 'bnf_id')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    // Nom de famille du bénéficiaire
+    #[ORM\Column(name: 'bnf_lastname', length: 255)]
     private ?string $lastname = null;
 
-    #[ORM\Column(length: 255)]
+    // Prénom du bénéficiaire
+    #[ORM\Column(name: 'bnf_firstname', length: 255)]
     private ?string $firstname = null;
 
-    #[ORM\Column(length: 180)]
+    // Adresse email utilisée pour notifier le bénéficiaire lors du protocole d'héritage
+    #[ORM\Column(name: 'bnf_email', length: 180)]
     private ?string $email = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    // Date de naissance — utilisée pour la vérification d'identité par le notaire
+    #[ORM\Column(name: 'bnf_birth_date', type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $birthDate = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    // Lieu de naissance — utilisé pour la vérification d'identité
+    #[ORM\Column(name: 'bnf_birth_place', length: 255, nullable: true)]
     private ?string $birthPlace = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    // Token unique généré après approbation du notaire pour accéder aux données léguées
+    #[ORM\Column(name: 'bnf_access_token', length: 255, nullable: true)]
     private ?string $accessToken = null;
 
-    #[ORM\Column(nullable: true)]
+    // Date d'expiration du token d'accès (30 jours après génération)
+    #[ORM\Column(name: 'bnf_token_expires_at', nullable: true)]
     private ?\DateTime $tokenExpiresAt = null;
 
-    #[ORM\Column(length: 500, nullable: true)]
+    // Chemin du justificatif de décès téléversé par le bénéficiaire
+    #[ORM\Column(name: 'bnf_submitted_doc_path', length: 500, nullable: true)]
     private ?string $submittedDocPath = null;
 
-    #[ORM\Column(length: 20)]
+    // Statut de validation : EN_ATTENTE / APPROUVE / REFUSE
+    #[ORM\Column(name: 'bnf_validation_status', length: 20)]
     private ?string $validationStatus = null;
 
+    // Relation vers l'utilisateur qui a désigné ce bénéficiaire
     #[ORM\ManyToOne(inversedBy: 'beneficiaries')]
-    #[ORM\JoinColumn(name: 'created_by_id', referencedColumnName: 'usr_id', nullable: false)]
+    #[ORM\JoinColumn(name: 'bnf_user_id', referencedColumnName: 'usr_id', nullable: false)]
     private ?User $createdBy = null;
 
+    // Liste des éléments du coffre légués à ce bénéficiaire
     /**
      * @var Collection<int, VaultElement>
      */
     #[ORM\OneToMany(targetEntity: VaultElement::class, mappedBy: 'beneficiary')]
     private Collection $vaultElements;
 
-    #[ORM\Column(length: 500, nullable: true)]
+    // Chemin de la pièce d'identité téléversée (complément au justificatif de décès)
+    #[ORM\Column(name: 'bnf_id_doc_path', length: 500, nullable: true)]
     private ?string $idDocPath = null;
 
     public function __construct()
@@ -207,7 +223,7 @@ class Beneficiary
     public function removeVaultElement(VaultElement $vaultElement): static
     {
         if ($this->vaultElements->removeElement($vaultElement)) {
-            // set the owning side to null (unless already changed)
+            // Mettre le côté propriétaire à null (si pas déjà fait)
             if ($vaultElement->getBeneficiary() === $this) {
                 $vaultElement->setBeneficiary(null);
             }

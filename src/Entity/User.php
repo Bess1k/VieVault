@@ -11,80 +11,99 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
+// Utilisateur de l'application VieVault
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: 'users')]
+#[ORM\Table(name: 'users')] 
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'Un compte existe déjà avec cet email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    // Identifiant unique de l'utilisateur
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'usr_id')]
     private ?int $id = null;
 
+    // Adresse email, sert aussi d'identifiant pour se connecter
     #[ORM\Column(name: 'usr_email', length: 180)]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
+    // Rôles : ROLE_USER par défaut, ou ROLE_ADMIN / ROLE_NOTAIRE
     #[ORM\Column(name: 'usr_roles')]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
+    // Mot de passe hashé 
     #[ORM\Column(name: 'usr_password_hash')]
     private ?string $password = null;
 
+    // Nom de famille
     #[ORM\Column(name: 'usr_lastname', length: 100)]
     private ?string $lastname = null;
 
+    // Prénom
     #[ORM\Column(name: 'usr_firstname', length: 100)]
     private ?string $firstname = null;
 
+    // Date de naissance (utilisée pour la vérification chez le notaire)
     #[ORM\Column(name: 'usr_birth_date', type: Types::DATE_MUTABLE)]
     private ?\DateTime $birthDate = null;
 
+    // Lieu de naissance
     #[ORM\Column(name: 'usr_birth_place', length: 255)]
     private ?string $birthPlace = null;
 
+    // Mot de passe panique hashé, déclenche le mode leurre s'il est utilisé
     #[ORM\Column(name: 'usr_panic_password_hash', length: 255, nullable: true)]
     private ?string $panicPasswordHash = null;
 
+    // Date de la dernière connexion (utilisé pour le Dead Man's Switch)
     #[ORM\Column(name: 'usr_last_login_at', nullable: true)]
     private ?\DateTime $lastLoginAt = null;
 
+    // Vrai si l'utilisateur a activé le mode vacances
     #[ORM\Column(name: 'usr_is_paused')]
     private ?bool $isPaused = null;
 
+    // Date jusqu'à laquelle le mode vacances est actif
     #[ORM\Column(name: 'usr_pause_until', nullable: true)]
     private ?\DateTime $pauseUntil = null;
 
+    // Statut du compte : ACTIVE, INACTIVE, DECEASED
     #[ORM\Column(name: 'usr_status', length: 20)]
     private ?string $status = null;
 
     /**
      * @var Collection<int, VaultElement>
      */
+    // Liste des éléments dans le coffre de l'utilisateur
     #[ORM\OneToMany(targetEntity: VaultElement::class, mappedBy: 'createdBy', orphanRemoval: true)]
     private Collection $vaultElements;
 
     /**
      * @var Collection<int, Beneficiary>
      */
+    // Liste des bénéficiaires désignés par l'utilisateur
     #[ORM\OneToMany(targetEntity: Beneficiary::class, mappedBy: 'createdBy', orphanRemoval: true)]
     private Collection $beneficiaries;
 
     /**
      * @var Collection<int, AuditLog>
      */
+    // Historique des actions effectuées par l'utilisateur
     #[ORM\OneToMany(targetEntity: AuditLog::class, mappedBy: 'createdBy')]
     private Collection $auditLogs;
 
+    // Email de contact d'urgence (reçoit une alerte en cas de mode panique)
     #[ORM\Column(name: 'usr_emergency_email', length: 180, nullable: true)]
     private ?string $emergencyEmail = null;
 
+    // Vrai si l'email de l'utilisateur a été vérifié après inscription
     #[ORM\Column(name: 'usr_is_verified')]
     private ?bool $isVerified = null;
 

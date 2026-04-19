@@ -5,28 +5,37 @@ namespace App\Entity;
 use App\Repository\VaultFileRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+// Entité représentant un fichier (PDF, image, document) associé à un élément du coffre
+// Chaque élément du coffre peut contenir plusieurs fichiers (relation OneToMany)
 #[ORM\Entity(repositoryClass: VaultFileRepository::class)]
+#[ORM\Table(name: 'vault_files')] //< Nom de table au pluriel pour cohérence avec les autres tables
 class VaultFile
 {
+    // Clé primaire avec préfixe vfl_ (cohérence avec le dictionnaire MERISE)
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(name: 'vfl_id')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    // Nom unique du fichier sur le disque (généré avec uniqid pour éviter les collisions)
+    #[ORM\Column(name: 'vfl_filename', length: 255)]
     private ?string $filename = null;
 
-    #[ORM\Column(length: 255)]
+    // Nom original du fichier tel qu'envoyé par l'utilisateur
+    #[ORM\Column(name: 'vfl_original_name', length: 255)]
     private ?string $originalName = null;
 
-    #[ORM\Column(length: 100)]
+    // Type MIME du fichier (ex : application/pdf, image/jpeg)
+    #[ORM\Column(name: 'vfl_mime_type', length: 100)]
     private ?string $mimeType = null;
 
-    #[ORM\Column]
+    // Date et heure du téléversement (DateTimeImmutable pour garantir l'intégrité)
+    #[ORM\Column(name: 'vfl_uploaded_at')]
     private ?\DateTimeImmutable $uploadedAt = null;
 
+    // Relation vers l'élément du coffre auquel ce fichier appartient
     #[ORM\ManyToOne(inversedBy: 'files')]
-    #[ORM\JoinColumn(name: 'vault_element_id', referencedColumnName: 'elv_id', nullable: false)]
+    #[ORM\JoinColumn(name: 'vfl_vault_element_id', referencedColumnName: 'elv_id', nullable: false)]
     private ?VaultElement $vaultElement = null;
 
     public function getId(): ?int
