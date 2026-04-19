@@ -12,56 +12,56 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
+#[ORM\Table(name: 'users')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'Un compte existe déjà avec cet email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(name: 'usr_id')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(name: 'usr_email', length: 180)]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
-    #[ORM\Column]
+    #[ORM\Column(name: 'usr_roles')]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
-    #[ORM\Column]
+    #[ORM\Column(name: 'usr_password_hash')]
     private ?string $password = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(name: 'usr_lastname', length: 100)]
     private ?string $lastname = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(name: 'usr_firstname', length: 100)]
     private ?string $firstname = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(name: 'usr_birth_date', type: Types::DATE_MUTABLE)]
     private ?\DateTime $birthDate = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(name: 'usr_birth_place', length: 255)]
     private ?string $birthPlace = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(name: 'usr_panic_password_hash', length: 255, nullable: true)]
     private ?string $panicPasswordHash = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(name: 'usr_last_login_at', nullable: true)]
     private ?\DateTime $lastLoginAt = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'usr_is_paused')]
     private ?bool $isPaused = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(name: 'usr_pause_until', nullable: true)]
     private ?\DateTime $pauseUntil = null;
 
-    #[ORM\Column(length: 20)]
+    #[ORM\Column(name: 'usr_status', length: 20)]
     private ?string $status = null;
 
     /**
@@ -82,11 +82,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: AuditLog::class, mappedBy: 'createdBy')]
     private Collection $auditLogs;
 
-    #[ORM\Column(length: 180, nullable: true)]
+    #[ORM\Column(name: 'usr_emergency_email', length: 180, nullable: true)]
     private ?string $emergencyEmail = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'usr_is_verified')]
     private ?bool $isVerified = null;
+
     public function __construct()
     {
         $this->vaultElements = new ArrayCollection();

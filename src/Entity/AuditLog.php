@@ -23,7 +23,7 @@ class AuditLog
     private ?\DateTime $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'auditLogs')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'created_by_id', referencedColumnName: 'usr_id', nullable: false)]
     private ?User $createdBy = null;
 
     public function getId(): ?int

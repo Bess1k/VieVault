@@ -34,8 +34,8 @@ class VaultElement
     #[ORM\Column(nullable: true)]
     private ?\DateTime $updatedAt = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'vaultElements')]
+    #[ORM\JoinColumn(name: 'created_by_id', referencedColumnName: 'usr_id', nullable: false)]
     private ?User $createdBy = null;
 
     #[ORM\ManyToOne(inversedBy: 'vaultElements')]

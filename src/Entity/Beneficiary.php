@@ -44,7 +44,7 @@ class Beneficiary
     private ?string $validationStatus = null;
 
     #[ORM\ManyToOne(inversedBy: 'beneficiaries')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'created_by_id', referencedColumnName: 'usr_id', nullable: false)]
     private ?User $createdBy = null;
 
     /**
