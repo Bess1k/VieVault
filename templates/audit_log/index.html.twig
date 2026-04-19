@@ -7,10 +7,6 @@
     <h1>Logs d'audit</h1>
     <p class="text-muted">Historique de toutes les actions effectuées sur votre compte.</p>
 
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success">{{ message }}</div>
-    {% endfor %}
-
     {% if logs|length == 0 %}
         <div class="alert alert-info">Aucune activité enregistrée.</div>
     {% else %}
@@ -33,11 +29,12 @@
                                 {% elseif log.action == 'PANIC_LOGIN' %}
                                     <span class="badge bg-danger">Connexion panique</span>
                                 {% elseif log.action == 'CREATE' %}
-                                    <span class="badge bg-primary">Création</span>
+                                    <span class="badge bg-primary">Ajout d'un élément au coffre</span>
                                 {% elseif log.action == 'UPDATE' %}
-                                    <span class="badge bg-warning">Modification</span>
+                                    <span class="badge bg-warning">Modification d'un élément du coffre</span>
                                 {% elseif log.action == 'DELETE' %}
-                                    <span class="badge bg-danger">Suppression</span>
+                                    <span class="badge bg-danger">Suppression d'un élément du coffre</span>
+
                                 {% elseif log.action == 'VACATION_ON' %}
                                     <span class="badge bg-info">Mode vacances activé</span>
                                 {% elseif log.action == 'VACATION_OFF' %}
