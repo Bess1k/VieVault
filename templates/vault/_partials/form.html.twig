@@ -2,11 +2,12 @@
 {% if form.vars.data.id and form.vars.data.files|length > 0 %}
     <div class="card card-white mb-4">
         <div class="card-body">
-            <p class="text-uppercase text-muted small fw-bold mb-3" style="letter-spacing: 1px;">Fichiers existants</p>
+            <p class="text-uppercase text-muted small fw-bold mb-3">Fichiers existants</p>
             {% for file in form.vars.data.files %}
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <a href="{{ asset('uploads/vault/' ~ file.filename) }}" target="_blank" class="text-decoration-none">
-                        &#128196; {{ file.originalName }}
+                <div class="d-flex align-items-center justify-content-between py-2 {% if not loop.last %}border-bottom{% endif %}">
+                    <a href="{{ asset('uploads/vault/' ~ file.filename) }}" target="_blank" class="text-decoration-none d-flex align-items-center gap-2">
+                        <span>&#128206;</span>
+                        <span>{{ file.originalName }}</span>
                     </a>
                     <form method="post" action="{{ path('app_vault_file_delete', {id: file.id}) }}" class="d-inline" onsubmit="return confirm('Supprimer ce fichier ?');">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete_file' ~ file.id) }}">
@@ -24,7 +25,7 @@
         {{ form_start(form) }}
 
             {# Section : Informations de l'élément #}
-            <p class="text-uppercase text-muted small fw-bold mb-3" style="letter-spacing: 1px;">Informations de l'élément</p>
+            <p class="text-uppercase text-muted small fw-bold mb-3">Informations de l'élément</p>
             <div class="row">
                 <div class="col-md-8 mb-3">
                     {{ form_row(form.title) }}
@@ -36,18 +37,19 @@
             {{ form_row(form.content) }}
 
             {# Section : Héritage #}
-            <hr class="my-4">
-            <p class="text-uppercase text-muted small fw-bold mb-3" style="letter-spacing: 1px;">Héritage</p>
-            {{ form_row(form.isHeritage) }}
+            <p class="text-uppercase text-muted small fw-bold mb-3 mt-4">Héritage</p>
+            <div class="form-check mb-3">
+                {{ form_widget(form.isHeritage, {'attr': {'class': 'form-check-input'}}) }}
+                {{ form_label(form.isHeritage, null, {'label_attr': {'class': 'form-check-label'}}) }}
+            </div>
             <div id="beneficiary-field" style="display: none;">
                 {{ form_row(form.beneficiary) }}
             </div>
 
             {# Section : Fichiers #}
-            <hr class="my-4">
-            <p class="text-uppercase text-muted small fw-bold mb-3" style="letter-spacing: 1px;">Fichiers joints</p>
+            <p class="text-uppercase text-muted small fw-bold mb-3 mt-4">Fichiers joints</p>
             {{ form_row(form.uploadedFile) }}
-            <p class="text-muted small">Formats acceptés : PDF, JPG, PNG, TXT — max 5 Mo</p>
+            <p class="text-muted small mb-0">Formats acceptés : PDF, JPG, PNG, TXT — max 5 Mo</p>
 
             {# Boutons #}
             <div class="d-flex gap-2 mt-4 pt-3 border-top">

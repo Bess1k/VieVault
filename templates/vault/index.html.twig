@@ -3,72 +3,108 @@
 {% block title %}Mon coffre{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container py-4">
+
+    {# En-tête de la page #}
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <h1>Mon coffre</h1>
+            <h1 class="mb-1">Mon coffre</h1>
             <p class="text-muted mb-0">{{ vaultElements|length }} élément(s) stocké(s)</p>
         </div>
-        <a href="{{ path('app_vault_new') }}" class="btn btn-primary">+ Ajouter un élément</a>
+        <a href="{{ path('app_vault_new') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Ajouter un élément
+        </a>
     </div>
 
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success">{{ message }}</div>
-    {% endfor %}
-
     {# Barre de recherche et filtre par type #}
-    <form method="GET" class="mb-4">
-        <div class="row g-2">
-            <div class="col-md-6">
-                <input type="text" class="form-control" name="search" 
-                    placeholder="Rechercher par titre..." value="{{ search }}">
-            </div>
-            <div class="col-md-4">
-                <select name="type" class="form-select">
-                    <option value="">Tous les types</option>
-                    <option value="CODE" {{ selectedType == 'CODE' ? 'selected' }}>Code</option>
-                    <option value="DOCUMENT" {{ selectedType == 'DOCUMENT' ? 'selected' }}>Document</option>
-                    <option value="CRYPTO" {{ selectedType == 'CRYPTO' ? 'selected' }}>Cryptomonnaie</option>
-                    <option value="MOT_DE_PASSE" {{ selectedType == 'MOT_DE_PASSE' ? 'selected' }}>Mot de passe</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-outline-secondary w-100">Rechercher</button>
-            </div>
+    <div class="card card-white border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET">
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" name="search" placeholder="Rechercher par titre..." value="{{ search }}">
+                    </div>
+                    <div class="col-md-4">
+                        <select name="type" class="form-select">
+                            <option value="">Tous les types</option>
+                            <option value="CODE" {{ selectedType == 'CODE' ? 'selected' }}>Code</option>
+                            <option value="DOCUMENT" {{ selectedType == 'DOCUMENT' ? 'selected' }}>Document</option>
+                            <option value="CRYPTO" {{ selectedType == 'CRYPTO' ? 'selected' }}>Cryptomonnaie</option>
+                            <option value="MOT_DE_PASSE" {{ selectedType == 'MOT_DE_PASSE' ? 'selected' }}>Mot de passe</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary w-100">Filtrer</button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 
+    {# Liste des éléments #}
     {% if vaultElements|length == 0 %}
-        <div class="alert alert-info">
-            {% if search or selectedType %}
-                Aucun élément trouvé pour cette recherche.
-                <a href="{{ path('app_vault') }}">Réinitialiser</a>
-            {% else %}
-                Votre coffre est vide. Commencez par ajouter un élément.
-            {% endif %}
+        <div class="card card-white border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-safe2" style="font-size: 3rem; color: #dee2e6;"></i>
+                <p class="mt-3 mb-0 text-muted">
+                    {% if search or selectedType %}
+                        Aucun élément trouvé pour cette recherche.
+                        <a href="{{ path('app_vault') }}" class="ms-2">Réinitialiser</a>
+                    {% else %}
+                        Votre coffre est vide. Commencez par ajouter un élément.
+                    {% endif %}
+                </p>
+            </div>
         </div>
     {% else %}
         <div class="row g-4">
             {% for element in vaultElements %}
-                <div class="col-md-4">
-                    <div class="card card-hover card-white h-100">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-white card-hover h-100 border-0 shadow-sm">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title mb-0 fw-bolder">{{ element.title }}</h5>
-                                <span class="text-muted small border rounded px-2 py-1">{{ element.type }}</span>
+
+                            {# Header de la carte : icône + titre + type #}
+                            <div class="d-flex align-items-start gap-3 mb-3">
+                                <div class="icon-circle icon-circle-primary">
+                                    {% if element.type == 'MOT_DE_PASSE' %}
+                                        <i class="bi bi-key"></i>
+                                    {% elseif element.type == 'DOCUMENT' %}
+                                        <i class="bi bi-file-earmark-text"></i>
+                                    {% elseif element.type == 'CODE' %}
+                                        <i class="bi bi-lock"></i>
+                                    {% elseif element.type == 'CRYPTO' %}
+                                        <i class="bi bi-currency-bitcoin"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 min-width-0">
+                                    <h6 class="fw-bold mb-1 text-truncate">{{ element.title }}</h6>
+                                    <span class="badge bg-light text-muted small">
+                                        {% if element.type == 'MOT_DE_PASSE' %}Mot de passe
+                                        {% elseif element.type == 'DOCUMENT' %}Document
+                                        {% elseif element.type == 'CODE' %}Code
+                                        {% elseif element.type == 'CRYPTO' %}Cryptomonnaie
+                                        {% endif %}
+                                    </span>
+                                </div>
                             </div>
 
+                            {# Badge héritage #}
                             {% if element.isHeritage %}
-                                <p class="small mb-2" style="color: #0d6efd;">
-                                    Héritage
-                                    {% if element.beneficiary %}
-                                        → {{ element.beneficiary.firstname }} {{ element.beneficiary.lastname }}
-                                    {% endif %}
-                                </p>
+                                <div class="mb-3 p-2 rounded" style="background: rgba(13, 110, 253, 0.08);">
+                                    <p class="mb-0 small" style="color: #0a2540;">
+                                        <i class="bi bi-gift-fill me-1"></i>
+                                        <strong>Héritage</strong>
+                                        {% if element.beneficiary %}
+                                            → {{ element.beneficiary.firstname }} {{ element.beneficiary.lastname }}
+                                        {% endif %}
+                                    </p>
+                                </div>
                             {% endif %}
 
+                            {# Fichiers joints #}
                             {% if element.files|length > 0 %}
                                 <p class="small text-muted mb-2">
+                                    <i class="bi bi-paperclip me-1"></i>
                                     {% for file in element.files %}
                                         <a href="{{ asset('uploads/vault/' ~ file.filename) }}" target="_blank" class="text-muted text-decoration-underline me-1">
                                             {{ file.originalName }}
@@ -77,25 +113,37 @@
                                 </p>
                             {% endif %}
 
+                            {# Date #}
                             <p class="text-muted small mb-0">
-                                {{ element.createdAt|date('d/m/Y à H:i') }}
+                                <i class="bi bi-clock me-1"></i>
+                                {{ element.createdAt|date('d/m/Y') }}
                                 {% if element.updatedAt %}
-                                    · modifié le {{ element.updatedAt|date('d/m/Y à H:i') }}
+                                    · modifié le {{ element.updatedAt|date('d/m/Y') }}
                                 {% endif %}
                             </p>
+
                         </div>
-                        <div class="card-footer bg-transparent">
-                            <a href="{{ path('app_vault_edit', {id: element.id}) }}" class="small" style="color: #0d6efd;">Modifier</a>
-                            <span class="text-muted mx-1">|</span>
-                            <form method="post" action="{{ path('app_vault_delete', {id: element.id}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet élément ?');">
-                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ element.id) }}">
-                                <button type="submit" class="btn btn-link btn-sm p-0 small text-danger text-decoration-none">Supprimer</button>
-                            </form>
+
+                        {# Footer avec boutons d'action #}
+                        <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                            <div class="d-flex gap-2">
+                                <a href="{{ path('app_vault_edit', {id: element.id}) }}" class="btn btn-sm btn-outline-primary flex-grow-1">
+                                    <i class="bi bi-pencil"></i> Modifier
+                                </a>
+                                <form method="post" action="{{ path('app_vault_delete', {id: element.id}) }}" class="flex-grow-1" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet élément ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ element.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                                        <i class="bi bi-trash"></i> Supprimer
+                                    </button>
+                                </form>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% endif %}
+
 </div>
 {% endblock %}

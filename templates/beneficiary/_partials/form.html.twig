@@ -7,24 +7,37 @@
             <p class="text-uppercase text-muted small fw-bold mb-3">Identité du bénéficiaire</p>
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    {{ form_row(form.lastname) }}
+                    {{ form_label(form.lastname, 'Nom', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.lastname, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.lastname) }}
                 </div>
                 <div class="col-md-6 mb-3">
-                    {{ form_row(form.firstname) }}
+                    {{ form_label(form.firstname, 'Prénom', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.firstname, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.firstname) }}
                 </div>
             </div>
 
             {# Section : Contact #}
-            <p class="text-uppercase text-muted small fw-bold mb-3">Contact</p>
-            {{ form_row(form.email) }}
+            <p class="text-uppercase text-muted small fw-bold mb-3 mt-3">Contact</p>
+            <div class="mb-3">
+                {{ form_label(form.email, 'Adresse e-mail', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.email) }}
+            </div>
 
-            {# Section date e lieu de naissance #}
-            <div class="row mt-5">
+            {# Section : Date et lieu de naissance #}
+            <p class="text-uppercase text-muted small fw-bold mb-3 mt-3">Informations complémentaires</p>
+            <div class="row">
                 <div class="col-md-6 mb-3">
-                    {{ form_row(form.birthDate) }}
+                    {{ form_label(form.birthDate, 'Date de naissance', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.birthDate, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.birthDate) }}
                 </div>
                 <div class="col-md-6 mb-3">
-                    {{ form_row(form.birthPlace) }}
+                    {{ form_label(form.birthPlace, 'Lieu de naissance', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.birthPlace, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.birthPlace) }}
                 </div>
             </div>
 

@@ -1,0 +1,117 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Qui sommes-nous — VieVault{% endblock %}
+
+{% block body %}
+
+{# Hero avec image de fond subtile #}
+<div class="about-hero text-center py-5">
+    <div class="container">
+        <img src="{{ asset('images/logo-nb.png') }}" alt="VieVault" height="100" class="mb-3">
+        <h1 class="display-5 fw-bold mb-2">Qui sommes-nous</h1>
+        <p class="lead text-muted">L'histoire derrière VieVault</p>
+    </div>
+</div>
+
+<div class="container py-5">
+
+    {# Section : Notre mission — layout 2 colonnes #}
+    <div class="row align-items-center g-5 mb-5">
+        <div class="col-md-6">
+            <h3 class="mb-3">Notre mission</h3>
+            <p>
+                À l'ère du numérique, nos vies sont remplies de mots de passe, de codes d'accès, de documents
+                sensibles et de cryptomonnaies. Mais que deviennent ces informations si l'on disparaît
+                soudainement ?
+            </p>
+            <p class="mb-0">
+                <strong>VieVault</strong> a été pensé pour répondre à cette question. Notre mission est de
+                permettre à chacun de sécuriser ses données sensibles et d'organiser sereinement leur
+                transmission à ses proches, avec un cadre légal assuré par un notaire.
+            </p>
+        </div>
+        <div class="col-md-6 text-center">
+            <img src="{{ asset('images/coffre.png') }}" alt="Coffre-fort sécurisé" class="img-fluid" style="max-height: 300px;">
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    {# Section : Nos valeurs #}
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h3 class="mb-4 text-center">Nos valeurs</h3>
+            <div class="row g-4">
+                <div class="col-md-4 text-center">
+                    <div class="icon-circle icon-circle-primary mx-auto mb-3">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <h5 class="fw-bold">Sécurité</h5>
+                    <p class="text-muted small mb-0">
+                        Chiffrement AES-256-CBC, mot de passe panique, alertes SOS. Chaque fonctionnalité est pensée
+                        pour protéger vos données.
+                    </p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="icon-circle icon-circle-primary mx-auto mb-3">
+                        <i class="bi bi-heart"></i>
+                    </div>
+                    <h5 class="fw-bold">Bienveillance</h5>
+                    <p class="text-muted small mb-0">
+                        Penser à sa succession numérique, c'est un acte d'amour pour ses proches. Nous vous aidons à
+                        le faire simplement.
+                    </p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="icon-circle icon-circle-primary mx-auto mb-3">
+                        <i class="bi bi-bank"></i>
+                    </div>
+                    <h5 class="fw-bold">Cadre légal</h5>
+                    <p class="text-muted small mb-0">
+                        Chaque transmission est validée par un notaire. La légitimité des bénéficiaires est vérifiée
+                        avant tout accès.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    {# Section : Le projet — layout 2 colonnes #}
+    <div class="row align-items-center g-5 mb-5">
+        <div class="col-md-6 text-center order-md-1">
+            <img src="{{ asset('images/protection.png') }}" alt="Protection et sécurité" class="img-fluid" style="max-height: 280px;">
+        </div>
+        <div class="col-md-6 order-md-2">
+            <h3 class="mb-3">Le projet</h3>
+            <p>
+                VieVault a été développé dans le cadre de la formation <strong>Développeur Web et Web Mobile
+                (DWWM)</strong> au CCI Campus Colmar, en avril 2026.
+            </p>
+            <p class="mb-0">
+                L'application est construite avec Symfony 8, Doctrine ORM et PostgreSQL. Le design utilise
+                Bootstrap 5 pour une interface moderne et responsive.
+            </p>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    {# Section : L'auteur — centré #}
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h3 class="mb-4">L'auteur</h3>
+            <div class="icon-circle icon-circle-primary mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+                <i class="bi bi-person"></i>
+            </div>
+            <h4 class="fw-bold mb-1">Besnik MEHMETI</h4>
+            <p class="text-muted">Projet 4 de formation DWWM</p>
+            <p class="text-muted small mb-0">
+                Merci d'avoir pris le temps de découvrir VieVault.
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

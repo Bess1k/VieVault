@@ -3,69 +3,118 @@
 {% block title %}Tableau de bord{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
+<div class="container py-4">
+
     {# En-tête du dashboard #}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1>Bienvenue {{ user.firstname }}</h1>
-            <p class="text-muted mb-0">Votre espace personnel VieVault</p>
-        </div>        
+    <div class="mb-4 mt-4">
+        <h1 class="mb-1">Bonjour {{ user.firstname }} 👋</h1>
+        <p class="text-muted">Voici un aperçu de votre coffre-fort et de votre activité.</p>
     </div>
 
-    {# Messages flash #}
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success">{{ message }}</div>
-    {% endfor %}
+    {# Rangée 1 : Statistiques principales #}
+    <div class="row g-4 mt-5 mb-4">
 
+        {# Stat : Éléments du coffre #}
+        <div class="col-md-4">
+            <div class="card card-white card-hover h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="icon-circle icon-circle-primary">
+                            <i class="bi bi-safe2"></i>
+                        </div>
+                        <span class="text-uppercase text-muted small fw-bold">Coffre</span>
+                    </div>
+                    <p class="display-5 fw-bold mb-1" style="color: #0a2540;">{{ vaultElements|length }}</p>
+                    <p class="text-muted small mb-3">élément(s) stocké(s)</p>
+                    <a href="{{ path('app_vault') }}" class="btn btn-sm btn-outline-primary">
+                        Gérer mon coffre <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {# Stat : Bénéficiaires #}
+        <div class="col-md-4">
+            <div class="card card-white card-hover h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="icon-circle icon-circle-primary">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <span class="text-uppercase text-muted small fw-bold">Bénéficiaires</span>
+                    </div>
+                    <p class="display-5 fw-bold mb-1" style="color: #0a2540;">{{ beneficiaries|length }}</p>
+                    <p class="text-muted small mb-3">bénéficiaire(s) désigné(s)</p>
+                    <a href="{{ path('app_beneficiary') }}" class="btn btn-sm btn-outline-primary">
+                        Gérer mes bénéficiaires <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {# Stat : Statut du compte #}
+        <div class="col-md-4">
+            <div class="card card-white card-hover h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="icon-circle icon-circle-primary">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                    </div>
+                    <p class="fs-4 fw-bold mb-1" style="color: #0a2540;">
+                        {% if user.isPaused %}
+                            En pause
+                        {% else %}
+                            Actif
+                        {% endif %}
+                    </p>
+                    <p class="text-muted small mb-3">
+                        {% if user.isPaused and user.pauseUntil %}
+                            jusqu'au {{ user.pauseUntil|date('d/m/Y') }}
+                        {% else %}
+                            votre logs de coffre
+                        {% endif %}
+                    </p>
+                    <a href="{{ path('app_audit_logs') }}" class="btn btn-sm btn-outline-primary">
+                        Voir l'historique <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Rangée 2 : Actions et paramètres #}
+    <h5 class="text-uppercase text-muted small fw-bold mb-3 mt-5">Actions et paramètres</h5>
     <div class="row g-4">
-        {# Carte : Éléments du coffre #}
-        <div class="col-md-4">
-            <div class="card card-hover h-100">
-                <div class="card-body text-center">
-                    <img src="{{ asset('images/coffre.png') }}" alt="Coffre" height="100" class="mb-1">
-                    <h5 class="card-title text-uppercase">Mon coffre</h5>
-                    <p class="display-6 fw-bold" style="color: #0d6efd;">{{ vaultElements|length }}</p>
-                    <p class="text-muted">élément(s) stocké(s)</p>
-                    <a href="{{ path('app_vault') }}" class="btn btn-primary btn-sm">Gérer mon coffre</a>
-                </div>
-            </div>
-        </div>
-
-        {# Carte : Bénéficiaires #}
-        <div class="col-md-4">
-            <div class="card card-hover h-100">
-                <div class="card-body text-center">                    
-                    <img src="{{ asset('images/beneficiaires.png') }}" alt="Bénéficiaires" height="100" class="mb-1">
-                    <h5 class="card-title text-uppercase">Mes bénéficiaires</h5>
-                    <p class="display-6 fw-bold" style="color: #0d6efd;">{{ beneficiaries|length }}</p>
-                    <p class="text-muted">bénéficiaire(s) désigné(s)</p>
-                    <a href="{{ path('app_beneficiary') }}" class="btn btn-primary btn-sm">Gérer mes bénéficiaires</a>
-                </div>
-            </div>
-        </div>
 
         {# Carte : Mode vacances #}
         <div class="col-md-4">
-            <div class="card card-hover h-100">
-                <div class="card-body text-center">
-                    <img src="{{ asset('images/vacance.png') }}" alt="Pause" height="100" class="mb-1">
-                    <h5 class="card-title text-uppercase">Mode vacances</h5>
-                    {% if user.isPaused %}
-                        <span class="badge bg-warning mb-2">Activé</span>
-                        {% if user.pauseUntil %}
-                            <p class="text-muted">Jusqu'au {{ user.pauseUntil|date('d/m/Y') }}</p>
+            <div class="card card-white h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="icon-circle icon-circle-info">
+                            <i class="bi bi-airplane"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Mode vacances</h6>
+                            {% if user.isPaused %}
+                                <span class="badge bg-success-subtle text-success">Activé</span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary">Désactivé</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-3">
+                        Suspendez temporairement la surveillance d'activité (jusqu'à 180 jours).
+                    </p>
+                    <form method="post" action="{{ path('app_vacation_toggle') }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('vacation') }}">
+                        {% if user.isPaused %}
+                            <button type="submit" class="btn btn-sm btn-outline-success">Désactiver</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-sm btn-outline-warning">Activer</button>
                         {% endif %}
-                        <form method="post" action="{{ path('app_vacation_toggle') }}">
-                            <input type="hidden" name="_token" value="{{ csrf_token('vacation') }}">
-                            <button type="submit" class="btn btn-sm btn-outline-success mb-2">Désactiver</button>
-                        </form>
-                    {% else %}
-                        <span class="badge bg-secondary mb-2">Désactivé</span>
-                        <form method="post" action="{{ path('app_vacation_toggle') }}">
-                            <input type="hidden" name="_token" value="{{ csrf_token('vacation') }}">
-                            <button type="submit" class="btn btn-sm btn-outline-danger mt-5">Activer (180 jours)</button>
-                        </form>
-                    {% endif %}
+                    </form>
                 </div>
             </div>
         </div>
@@ -73,45 +122,61 @@
         {# Carte : Mot de passe panique - visible uniquement en mode normal #}
         {% if not app.session.get('panic_mode') %}
         <div class="col-md-4">
-            <div class="card card-hover h-100">
-                <div class="card-body text-center">
-                    <div class="display-4 mb-3">&#128680;</div>
-                    <h5 class="card-title text-uppercase">Mot de passe panique</h5>
+            <div class="card card-white h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="icon-circle icon-circle-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Mot de passe panique</h6>
+                            {% if user.panicPasswordHash %}
+                                <span class="badge bg-success-subtle text-success">Configuré</span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary">Non configuré</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-3">
+                        Un second mot de passe qui active un mode leurre en cas d'urgence.
+                    </p>
                     {% if user.panicPasswordHash %}
-                        <span class="badge bg-success mb-2">Configuré</span>
+                        <a href="{{ path('app_panic_password') }}" class="btn btn-sm btn-outline-success">
+                            Modifier
+                        </a>
                     {% else %}
-                        <span class="badge bg-secondary mb-2">Non configuré</span>
+                        <a href="{{ path('app_panic_password') }}" class="btn btn-sm btn-outline-danger">
+                            Configurer
+                        </a>
                     {% endif %}
-                    <p class="text-muted">Protection d'urgence</p>
-                    <a href="{{ path('app_panic_password') }}" class="btn btn-sm btn-outline-danger">Configurer</a>
                 </div>
             </div>
         </div>
         {% endif %}
 
-        {# Carte : Logs d'audit #}
+        {# Carte : Profil #}
         <div class="col-md-4">
-            <div class="card card-hover h-100">
-                <div class="card-body text-center">
-                    <div class="display-4 mb-3">&#128203;</div>
-                    <h5 class="card-title text-uppercase">Logs d'audit</h5>
-                    <p class="text-muted">Historique de toutes vos actions</p>
-                    <a href="{{ path('app_audit_logs') }}" class="btn btn-sm btn-outline-secondary">Consulter</a>
-                </div>
-            </div>
-        </div>
-
-        {# Carte : Mon profil #}
-        <div class="col-md-4">
-            <div class="card card-hover h-100">
-                <div class="card-body text-center">
-                    <div class="display-4 mb-3">&#128100;</div>
-                    <h5 class="card-title text-uppercase">Mon profil</h5>
-                    <p class="text-muted">{{ user.email }}</p>
-                    <a href="{{ path('app_profile') }}" class="btn btn-sm btn-outline-secondary">Modifier</a>
+            <div class="card card-white h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="icon-circle icon-circle-primary">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Mon profil</h6>
+                            <span class="text-muted small">{{ user.email }}</span>
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-3">
+                        Modifiez vos informations personnelles et votre mot de passe.
+                    </p>
+                    <a href="{{ path('app_profile') }}" class="btn btn-sm btn-outline-primary">
+                        Modifier le profil
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
 {% endblock %}

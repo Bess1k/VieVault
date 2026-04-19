@@ -3,45 +3,63 @@
 {% block title %}Connexion - VieVault{% endblock %}
 
 {% block body %}
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success">{{ message }}</div>
-    {% endfor %}
-    {% for message in app.flashes('danger') %}
-        <div class="alert alert-danger">{{ message }}</div>
-    {% endfor %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card card-white shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <img src="{{ asset('images/logo.png') }}" alt="VieVault" height="60" class="mb-3">
+                        <h1 class="h3 mb-1">Connexion</h1>
+                        <p class="text-muted small">Accédez à votre coffre-fort numérique</p>
+                    </div>
 
-    <form method="post">
-        {% if error %}
-            {% if error.messageKey == 'Invalid CSRF token.' %}
-                <div class="alert alert-warning">Votre session a expiré. Veuillez réessayer.</div>
-            {% else %}
-                <div class="alert alert-danger">Identifiants incorrects. Veuillez réessayer.</div>
-            {% endif %}
-        {% endif %}
+                    <form method="post">
+                        {% if error %}
+                            {% if error.messageKey == 'Invalid CSRF token.' %}
+                                <div class="alert alert-warning">Votre session a expiré. Veuillez réessayer.</div>
+                            {% else %}
+                                <div class="alert alert-danger">Identifiants incorrects. Veuillez réessayer.</div>
+                            {% endif %}
+                        {% endif %}
 
-        {% if app.user %}
-            <div class="mb-3">
-                Vous êtes connecté en tant que {{ app.user.userIdentifier }},
-                <a href="{{ logout_path() }}">Déconnexion</a>
+                        {% if app.user %}
+                            <div class="alert alert-info mb-3">
+                                Vous êtes connecté en tant que {{ app.user.userIdentifier }}.
+                                <a href="{{ logout_path() }}">Déconnexion</a>
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Adresse e-mail</label>
+                            <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mot de passe</label>
+                            <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+                        </div>
+
+                        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+                        <button class="btn btn-primary w-100 mt-2" type="submit">
+                            Se connecter
+                        </button>
+
+                        <div class="text-center mt-3">
+                            <a href="{{ path('app_forgot_password_request') }}" class="small text-muted">Mot de passe oublié ?</a>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <p class="text-center text-muted small mb-0">
+                            Pas encore de compte ?
+                            <a href="{{ path('app_register') }}" class="fw-semibold">S'inscrire</a>
+                        </p>
+                    </form>
+                </div>
             </div>
-        {% endif %}
-
-        <h1 class="h3 mb-3 font-weight-normal">Connexion</h1>
-
-        <label for="username">Email</label>
-        <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
-
-        <label for="password">Mot de passe</label>
-        <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
-
-        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
-
-        <button class="btn btn-lg btn-primary mt-3" type="submit">
-            Se connecter
-        </button>
-
-        <div class="mt-3">
-            <a href="{{ path('app_forgot_password_request') }}">Mot de passe oublié ?</a>
         </div>
-    </form>
+    </div>
+</div>
 {% endblock %}

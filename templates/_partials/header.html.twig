@@ -1,17 +1,20 @@
 <header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-marine">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">
-                <img src="{{ asset('images/logo.png') }}" alt="VieVault" height="35" class="me-2">
-                VieVault
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{{ path('app_home') }}">
+                <img src="{{ asset('images/logo.png') }}" alt="VieVault" height="35">
+                <span>VieVault</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
                     <li class="nav-item">
                         <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_about') }}" class="nav-link">Qui sommes-nous</a>
                     </li>
 
                     {% if app.user %}
@@ -21,7 +24,7 @@
                                 <a href="{{ path('app_admin') }}" class="nav-link">Administration</a>
                             </li>
 
-                        {# Menu Notaire — uniquement l'espace notaire #}
+                        {# Menu Notaire #}
                         {% elseif is_granted('ROLE_NOTAIRE') %}
                             <li class="nav-item">
                                 <a href="{{ path('app_notaire') }}" class="nav-link">Espace Notaire</a>
@@ -37,21 +40,21 @@
                             </li>
                             <li class="nav-item">
                                 <a href="{{ path('app_beneficiary') }}" class="nav-link">Bénéficiaires</a>
-                            </li>                           
+                            </li>
                             <li class="nav-item">
                                 <a href="{{ path('app_profile') }}" class="nav-link">Mon profil</a>
                             </li>
                         {% endif %}
 
-                        <li class="nav-item">
-                            <a href="{{ path('app_logout') }}" class="nav-link text-warning">Déconnexion</a>
+                        <li class="nav-item ms-lg-3">
+                            <a href="{{ path('app_logout') }}" class="btn btn-outline-light btn-sm">Déconnexion</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
                             <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ path('app_register') }}" class="nav-link">Inscription</a>
+                        <li class="nav-item ms-lg-2">
+                            <a href="{{ path('app_register') }}" class="btn btn-light btn-sm">Inscription</a>
                         </li>
                     {% endif %}
                 </ul>

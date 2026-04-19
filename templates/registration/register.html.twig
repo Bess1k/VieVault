@@ -1,21 +1,92 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Inscription{% endblock %}
+{% block title %}Inscription - VieVault{% endblock %}
 
 {% block body %}
-    <h1>Inscription</h1>
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card card-white shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <img src="{{ asset('images/logo.png') }}" alt="VieVault" height="60" class="mb-3">
+                        <h1 class="h3 mb-1">Créer un compte</h1>
+                    </div>
 
-    {{ form_errors(registrationForm) }}
+                    {{ form_errors(registrationForm) }}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.lastname) }}
-        {{ form_row(registrationForm.firstname) }}
-        {{ form_row(registrationForm.birthDate) }}
-        {{ form_row(registrationForm.birthPlace) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+                    {{ form_start(registrationForm) }}
 
-        <button type="submit" class="btn btn-primary">S'inscrire</button>
-    {{ form_end(registrationForm) }}
+                        {# Nom et prénom sur la même ligne #}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(registrationForm.lastname, 'Nom', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(registrationForm.lastname, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(registrationForm.lastname) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(registrationForm.firstname, 'Prénom', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(registrationForm.firstname, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(registrationForm.firstname) }}
+                            </div>
+                        </div>
+
+                        {# Date et lieu de naissance sur la même ligne #}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(registrationForm.birthDate, 'Date de naissance', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(registrationForm.birthDate, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(registrationForm.birthDate) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(registrationForm.birthPlace, 'Lieu de naissance', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(registrationForm.birthPlace, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(registrationForm.birthPlace) }}
+                            </div>
+                        </div>
+
+                        {# Email pleine largeur #}
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.email, 'Adresse e-mail', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(registrationForm.email) }}
+                        </div>
+
+                        {# Mot de passe et confirmation sur la même ligne #}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(registrationForm.plainPassword.first, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(registrationForm.plainPassword.first) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(registrationForm.plainPassword.second, 'Confirmer le mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </div>
+
+                        {# Case à cocher #}
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(registrationForm.agreeTerms, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                            {{ form_errors(registrationForm.agreeTerms) }}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mt-2">S'inscrire</button>
+
+                        <hr class="my-4">
+
+                        <p class="text-center text-muted small mb-0">
+                            Déjà un compte ?
+                            <a href="{{ path('app_login') }}" class="fw-semibold">Se connecter</a>
+                        </p>
+
+                    {{ form_end(registrationForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
