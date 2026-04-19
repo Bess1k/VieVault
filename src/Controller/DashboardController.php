@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use App\Form\UserInfoFormType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -45,18 +46,27 @@ final class DashboardController extends AbstractController
     }
 
 
-    // Afficher et modifier le profil
+   // Afficher et modifier le profil
     #[Route('/profile', name: 'app_profile')]
-    public function profile(Request $request, EntityManagerInterface $em): Response
-    {
+    public function profile(
+        Request $request,
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $userPasswordHasher
+    ): Response {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        if ($request->isMethod('POST')) {
-            $user->setLastname($request->request->get('lastname'));
-            $user->setFirstname($request->request->get('firstname'));
-            $user->setEmail($request->request->get('email'));
-            $user->setBirthPlace($request->request->get('birthPlace'));
+        $form = $this->createForm(UserInfoFormType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var string|null $plainPassword */
+            $plainPassword = $form->get('plainPassword')->getData();
+
+            // Si l'utilisateur a saisi un nouveau mot de passe, on le hash
+            if ($plainPassword) {
+                $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            }
 
             $em->flush();
             $this->addFlash('success', 'Profil mis à jour.');
@@ -65,6 +75,7 @@ final class DashboardController extends AbstractController
 
         return $this->render('dashboard/profile.html.twig', [
             'user' => $user,
+            'profileForm' => $form,
         ]);
     }
 
