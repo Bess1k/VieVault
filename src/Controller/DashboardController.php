@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Form\UserInfoFormType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
@@ -81,23 +82,29 @@ final class DashboardController extends AbstractController
 
     // Supprimer le compte
     #[Route('/profile/delete', name: 'app_profile_delete', methods: ['POST'])]
-    public function deleteAccount(Request $request, EntityManagerInterface $em): Response
+    public function deleteAccount(Request $request, EntityManagerInterface $em, LoggerInterface $logger): Response 
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
         // Vérification CSRF
         if ($this->isCsrfTokenValid('delete_account', $request->request->get('_token'))) {
-            // Déconnecter l'utilisateur avant suppression
-            $this->container->get('security.token_storage')->setToken(null);
-            $request->getSession()->invalidate();
+            try {
+                // Déconnecter l'utilisateur avant suppression
+                $this->container->get('security.token_storage')->setToken(null);
+                $request->getSession()->invalidate();
 
-            // Supprimer l'utilisateur et toutes ses données
-            $em->remove($user);
-            $em->flush();
+                // Supprimer l'utilisateur et toutes ses données
+                $em->remove($user);
+                $em->flush();
 
-            $this->addFlash('success', 'Votre compte a été supprimé.');
-            return $this->redirectToRoute('app_home');
+                $this->addFlash('success', 'Votre compte a été supprimé.');
+                return $this->redirectToRoute('app_home');
+            } catch (\Exception $exc) {
+                $this->addFlash('danger', 'Une erreur est survenue lors de la suppression du compte.');
+                $logger->error($exc->getMessage());
+                return $this->redirectToRoute('app_profile');
+            }
         }
 
         return $this->redirectToRoute('app_profile');

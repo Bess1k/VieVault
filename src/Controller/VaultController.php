@@ -10,11 +10,11 @@ use App\Service\FileUploader;
 use App\Service\VaultEncryptor;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
@@ -23,7 +23,8 @@ final class VaultController extends AbstractController
 {
     // Liste des éléments du coffre de l'utilisateur connecté
     #[Route('', name: 'app_vault')]
-    public function index(RequestStack $requestStack, VaultEncryptor $encryptor, Request $request, \App\Repository\VaultElementRepository $repo): Response
+    public function index(RequestStack $requestStack, VaultEncryptor $encryptor, Request $request, 
+                            \App\Repository\VaultElementRepository $repo): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
@@ -171,8 +172,10 @@ final class VaultController extends AbstractController
 
     // Supprimer un élément
     #[Route('/{id}/delete', name: 'app_vault_delete', methods: ['POST'])]
-    public function delete(VaultElement $element, Request $request, EntityManagerInterface $em, AuditLogger $auditLogger, FileUploader $fileUploader): Response
+    public function delete(VaultElement $element,Request $request,EntityManagerInterface $em,AuditLogger $auditLogger,
+                    FileUploader $fileUploader,LoggerInterface $logger): Response 
     {
+
         // Vérifier que l'élément appartient à l'utilisateur connecté
         if ($element->getCreatedBy() !== $this->getUser()) {
             throw $this->createAccessDeniedException();
@@ -180,15 +183,20 @@ final class VaultController extends AbstractController
 
         // Vérification du token CSRF pour la sécurité
         if ($this->isCsrfTokenValid('delete' . $element->getId(), $request->request->get('_token'))) {
-            // Supprimer tous les fichiers associés du disque
-            foreach ($element->getFiles() as $file) {
-                $fileUploader->remove($file->getFilename());
-            }
+            try {
+                // Supprimer tous les fichiers associés du disque
+                foreach ($element->getFiles() as $file) {
+                    $fileUploader->remove($file->getFilename());
+                }
 
-            $em->remove($element);
-            $em->flush();
-            $auditLogger->log($this->getUser(), 'DELETE');
-            $this->addFlash('success', 'Élément supprimé.');
+                $em->remove($element);
+                $em->flush();
+                $auditLogger->log($this->getUser(), 'DELETE');
+                $this->addFlash('success', 'Élément supprimé.');
+            } catch (\Exception $exc) {
+                $this->addFlash('danger', 'Une erreur est survenue lors de la suppression. Veuillez réessayer.');
+                $logger->error($exc->getMessage());
+            }
         }
 
         return $this->redirectToRoute('app_vault');
@@ -196,8 +204,10 @@ final class VaultController extends AbstractController
 
     // Supprimer un fichier individuel d'un élément
     #[Route('/file/{id}/delete', name: 'app_vault_file_delete', methods: ['POST'])]
-    public function deleteFile(\App\Entity\VaultFile $vaultFile, Request $request, EntityManagerInterface $em, FileUploader $fileUploader): Response
+    public function deleteFile(\App\Entity\VaultFile $vaultFile, Request $request, EntityManagerInterface $em,
+                                FileUploader $fileUploader, LoggerInterface $logger): Response 
     {
+
         // Vérifier que le fichier appartient à l'utilisateur connecté
         if ($vaultFile->getVaultElement()->getCreatedBy() !== $this->getUser()) {
             throw $this->createAccessDeniedException();
@@ -205,14 +215,19 @@ final class VaultController extends AbstractController
 
         // Vérification du token CSRF
         if ($this->isCsrfTokenValid('delete_file' . $vaultFile->getId(), $request->request->get('_token'))) {
-            // Supprimer le fichier du disque
-            $fileUploader->remove($vaultFile->getFilename());
+            try {
+                // Supprimer le fichier du disque
+                $fileUploader->remove($vaultFile->getFilename());
 
-            // Supprimer l'entrée de la base
-            $em->remove($vaultFile);
-            $em->flush();
+                // Supprimer l'entrée de la base
+                $em->remove($vaultFile);
+                $em->flush();
 
-            $this->addFlash('success', 'Fichier supprimé.');
+                $this->addFlash('success', 'Fichier supprimé.');
+            } catch (\Exception $exc) {
+                $this->addFlash('danger', 'Une erreur est survenue lors de la suppression du fichier.');
+                $logger->error($exc->getMessage());
+            }
         }
 
         return $this->redirectToRoute('app_vault_edit', ['id' => $vaultFile->getVaultElement()->getId()]);

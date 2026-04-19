@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
@@ -94,8 +95,10 @@ final class BeneficiaryController extends AbstractController
 
     // Supprimer un bénéficiaire
     #[Route('/{id}/delete', name: 'app_beneficiary_delete', methods: ['POST'])]
-    public function delete(Beneficiary $beneficiary, Request $request, EntityManagerInterface $em): Response
+    public function delete(Beneficiary $beneficiary, Request $request, EntityManagerInterface $em,
+        LoggerInterface $logger): Response 
     {
+
         // Vérifier que le bénéficiaire appartient à l'utilisateur connecté
         if ($beneficiary->getCreatedBy() !== $this->getUser()) {
             throw $this->createAccessDeniedException();
@@ -103,9 +106,14 @@ final class BeneficiaryController extends AbstractController
 
         // Vérification du token CSRF
         if ($this->isCsrfTokenValid('delete' . $beneficiary->getId(), $request->request->get('_token'))) {
-            $em->remove($beneficiary);
-            $em->flush();
-            $this->addFlash('success', 'Bénéficiaire supprimé.');
+            try {
+                $em->remove($beneficiary);
+                $em->flush();
+                $this->addFlash('success', 'Bénéficiaire supprimé.');
+            } catch (\Exception $exc) {
+                $this->addFlash('danger', 'Une erreur est survenue lors de la suppression.');
+                $logger->error($exc->getMessage());
+            }
         }
 
         return $this->redirectToRoute('app_beneficiary');
