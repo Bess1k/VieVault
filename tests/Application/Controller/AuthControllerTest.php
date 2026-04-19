@@ -34,7 +34,7 @@ class AuthControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
 
         // Soumettre le formulaire avec les bons identifiants
-        $client->submitForm('Sign in', [
+        $client->submitForm('Se connecter', [
             '_username' => $objUser->getEmail(),
             '_password' => UserFactory::DEFAULT_PASSWORD,
         ]);
@@ -58,7 +58,7 @@ class AuthControllerTest extends WebTestCase
         $client->request('GET', '/login');
         $this->assertResponseIsSuccessful();
 
-        $client->submitForm('Sign in', [
+        $client->submitForm('Se connecter', [
             '_username' => $objUser->getEmail(),
             '_password' => 'MauvaisMotDePasse',
         ]);
@@ -80,7 +80,7 @@ class AuthControllerTest extends WebTestCase
         $client->request('GET', '/login');
         $this->assertResponseIsSuccessful();
 
-        $client->submitForm('Sign in', [
+        $client->submitForm('Se connecter', [
             '_username' => 'nexistepas@vievault.fr',
             '_password' => 'MauvaisMotDePasse',
         ]);
