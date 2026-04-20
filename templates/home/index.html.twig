@@ -7,30 +7,30 @@
 <div class="d-flex align-items-center justify-content-center text-center hero-section">
     <div class="container">
         <img src="{{ asset('images/logo-nb.png') }}" alt="VieVault" height="130" class="mb-4">
-        <h1 class="display-4 fw-bold hero-title mb-3">Sécurisez aujourd'hui,<br>transmettez demain.</h1>
-        <p class="lead mb-4 text-muted">
+        <h1 class="display-4 fw-bold hero-title mb-4">Sécurisez aujourd'hui,<br>transmettez demain.</h1>
+        <p class="lead mb-5 text-muted">
             Votre coffre-fort numérique personnel pour protéger vos données<br class="d-none d-md-block">
             et organiser leur transmission à vos proches.
         </p>
         {% if not app.user %}
-            <a href="{{ path('app_register') }}" class="btn btn-primary btn-lg me-2">S'inscrire</a>
-            <a href="{{ path('app_login') }}" class="btn btn-outline-primary btn-lg">Se connecter</a>
+            <a href="{{ path('app_register') }}" class="btn btn-primary btn-lg me-3 px-4 py-2">S'inscrire</a>
+            <a href="{{ path('app_login') }}" class="btn btn-outline-primary btn-lg px-4 py-2">Se connecter</a>
         {% else %}
-            <a href="{{ path('app_dashboard') }}" class="btn btn-primary btn-lg">Accéder à mon coffre</a>
+            <a href="{{ path('app_dashboard') }}" class="btn btn-primary btn-lg px-4 py-2">Accéder à mon coffre</a>
         {% endif %}
     </div>
 </div>
 
 {# Section Fonctionnalités #}
 <div class="container py-5 my-5">
-    <h2 class="text-center mb-5">Comment ça fonctionne ?</h2>
-    <div class="row g-4">
+    <h2 class="text-center mb-5 pb-3">Comment ça fonctionne ?</h2>
+    <div class="row g-5">
         {# Carte 1 : Coffre-fort #}
         <div class="col-md-4">
             <div class="card h-100 text-center border-0 shadow-sm card-hover">
-                <div class="card-body">
-                    <img src="{{ asset('images/coffre.png') }}" alt="Coffre-fort" height="80" class="mb-3">
-                    <h5 class="card-title">Coffre-fort sécurisé</h5>
+                <div class="card-body p-4 p-xl-5">
+                    <img src="{{ asset('images/coffre.png') }}" alt="Coffre-fort" height="80" class="mb-4">
+                    <h5 class="card-title mb-3">Coffre-fort sécurisé</h5>
                     <p class="card-text text-muted">
                         Stockez vos mots de passe, codes, documents et clés de cryptomonnaies dans un espace hautement sécurisé.
                     </p>
@@ -41,12 +41,11 @@
         {# Carte 2 : Héritage #}
         <div class="col-md-4">
             <div class="card h-100 text-center border-0 shadow-sm card-hover">
-                <div class="card-body">
-                    <img src="{{ asset('images/heritage.png') }}" alt="Heritage" height="80" class="mb-3">
-                    <h5 class="card-title">Héritage numérique</h5>
+                <div class="card-body p-4 p-xl-5">
+                    <img src="{{ asset('images/heritage.png') }}" alt="Heritage" height="80" class="mb-4">
+                    <h5 class="card-title mb-3">Héritage numérique</h5>
                     <p class="card-text text-muted">
-                        Désignez des bénéficiaires pour chaque élément.
-                        En cas d'inactivité prolongée, vos données sont transmises en toute sécurité.
+                        Désignez des bénéficiaires pour chaque élément. En cas d'inactivité prolongée, vos données sont transmises en toute sécurité.
                     </p>
                 </div>
             </div>
@@ -55,9 +54,9 @@
         {# Carte 3 : Sécurité #}
         <div class="col-md-4">
             <div class="card h-100 text-center border-0 shadow-sm card-hover">
-                <div class="card-body">
-                    <img src="{{ asset('images/protection.png') }}" alt="Protection" height="80" class="mb-3">
-                    <h5 class="card-title">Protection avancée</h5>
+                <div class="card-body p-4 p-xl-5">
+                    <img src="{{ asset('images/protection.png') }}" alt="Protection" height="80" class="mb-4">
+                    <h5 class="card-title mb-3">Protection avancée</h5>
                     <p class="card-text text-muted">
                         Connexion d'urgence discrète, pause vacances, historique des actions et validation légale pour une sécurité maximale.
                     </p>
@@ -68,29 +67,29 @@
 </div>
 
 {# Section Comment ça marche  #}
-<div class="section-marine py-5 my-5 text-white">
+<div class="section-marine py-5 my-5 text-white" style="padding-top: 6rem !important; padding-bottom: 6rem !important;">
     <div class="container">
-        <h2 class="text-center mb-5">En 4 étapes simples</h2>
-        <div class="row g-4">
-            <div class="col-md-3 text-center">
-                <div class="display-5 fw-bold mb-2 numero-etape">1</div>
-                <h6 class="fw-bold">Créez votre compte</h6>
-                <p class="small opacity-75">Inscription rapide avec vérification par email.</p>
+        <h2 class="text-center mb-5 pb-4">En 4 étapes simples</h2>
+        <div class="row g-5">
+            <div class="col-md-3 text-center px-4">
+                <div class="display-4 fw-bold mb-3 numero-etape">1</div>
+                <h5 class="fw-bold mb-3">Créez votre compte</h5>
+                <p class="opacity-75">Inscription rapide avec vérification par email.</p>
             </div>
-            <div class="col-md-3 text-center">
-                <div class="display-5 fw-bold mb-2 numero-etape">2</div>
-                <h6 class="fw-bold">Stockez vos données</h6>
-                <p class="small opacity-75">Ajoutez codes, documents et mots de passe dans votre coffre chiffré.</p>
+            <div class="col-md-3 text-center px-4">
+                <div class="display-4 fw-bold mb-3 numero-etape">2</div>
+                <h5 class="fw-bold mb-3">Stockez vos données</h5>
+                <p class="opacity-75">Ajoutez codes, documents et mots de passe dans votre coffre chiffré.</p>
             </div>
-            <div class="col-md-3 text-center">
-                <div class="display-5 fw-bold mb-2 numero-etape">3</div>
-                <h6 class="fw-bold">Désignez vos bénéficiaires</h6>
-                <p class="small opacity-75">Choisissez qui recevra quoi en cas de besoin.</p>
+            <div class="col-md-3 text-center px-4">
+                <div class="display-4 fw-bold mb-3 numero-etape">3</div>
+                <h5 class="fw-bold mb-3">Désignez vos bénéficiaires</h5>
+                <p class="opacity-75">Choisissez qui recevra quoi en cas de besoin.</p>
             </div>
-            <div class="col-md-3 text-center">
-                <div class="display-5 fw-bold mb-2 numero-etape">4</div>
-                <h6 class="fw-bold">Vivez l'esprit tranquille</h6>
-                <p class="small opacity-75">Vos données sont protégées et transmises automatiquement.</p>
+            <div class="col-md-3 text-center px-4">
+                <div class="display-4 fw-bold mb-3 numero-etape">4</div>
+                <h5 class="fw-bold mb-3">Vivez l'esprit tranquille</h5>
+                <p class="opacity-75">Vos données sont protégées et transmises automatiquement.</p>
             </div>
         </div>
     </div>
@@ -99,23 +98,39 @@
 {# Section Sécurité #}
 <div class="container py-5 my-5">
     <div class="row justify-content-center">
-        <div class="col-lg-9 text-center">
-            <h2 class="mb-5 display-6 fw-bold">Votre sécurité, notre priorité</h2>
-            <div class="row g-4 text-start">
-                <div class="col-md-6">
-                    <p class="mb-3 fs-5">&#10003; Chiffrement AES-256-CBC du contenu</p>
-                    <p class="mb-3 fs-5">&#10003; Mot de passe panique avec leurre</p>
-                    <p class="mb-3 fs-5">&#10003; Alerte SOS aux contacts de confiance</p>
+        <div class="col-lg-10 text-center">
+            <h2 class="mb-5 pb-3 display-6 fw-bold">Votre sécurité, notre priorité</h2>
+            <div class="row g-5 text-start justify-content-center">
+                <div class="col-md-5">
+                    <div class="d-flex align-items-center mb-4">
+                        <span class="fs-4 text-primary me-3">&#10003;</span>
+                        <span class="fs-5">Chiffrement AES-256-CBC du contenu</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-4">
+                        <span class="fs-4 text-primary me-3">&#10003;</span>
+                        <span class="fs-5">Mot de passe panique avec leurre</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="fs-4 text-primary me-3">&#10003;</span>
+                        <span class="fs-5">Alerte SOS aux contacts de confiance</span>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <p class="mb-3 fs-5">&#10003; Mode vacances personnalisable</p>
-                    <p class="mb-3 fs-5">&#10003; Logs d'audit traçabilité complète</p>
-                    <p class="mb-3 fs-5">&#10003; Validation légale par un Notaire</p>
+                <div class="col-md-5">
+                    <div class="d-flex align-items-center mb-4">
+                        <span class="fs-4 text-primary me-3">&#10003;</span>
+                        <span class="fs-5">Mode vacances personnalisable</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-4">
+                        <span class="fs-4 text-primary me-3">&#10003;</span>
+                        <span class="fs-5">Logs d'audit traçabilité complète</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="fs-4 text-primary me-3">&#10003;</span>
+                        <span class="fs-5">Validation légale par un Notaire</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
 {% endblock %}
