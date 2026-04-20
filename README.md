@@ -10,6 +10,5 @@ Pour installer le projet, il faut d'abord cloner le dépôt, puis lancer compose
 
 Une fois la configuration terminée, on crée la base avec la commande symfony console doctrine:database:create, puis on exécute les migrations avec symfony console doctrine:migrations:migrate. 
 
-Le serveur se lance avec symfony server:start et l'application est accessible sur https://127.0.0.1:8000.
 
 Auteur : Besnik MEHMETI
