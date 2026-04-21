@@ -1,14 +1,41 @@
 # VieVault
 
-VieVault est un coffre-fort numérique qui permet de stocker des informations comme des mots de passe, des documents, des codes ou des cryptomonnaies. L'application permet de désigner des bénéficiaires qui pourront récupérer ces données après le décès de l'utilisateur, après validation par un notaire.
+VieVault est une application web de coffre-fort numérique conçue pour permettre à un utilisateur de stocker et organiser des informations sensibles en toute sécurité, comme des mots de passe, des documents, des codes confidentiels ou encore des données liées aux cryptomonnaies.
 
-Ce projet a été réalisé dans le cadre de la formation DWWM au CCI Campus Colmar, en avril 2026.
+L’objectif du projet est de proposer une solution simple et sécurisée pour préparer la transmission de ces informations à des bénéficiaires désignés. Après le décès de l’utilisateur, l’accès aux données peut être accordé uniquement après validation par un notaire, afin de garantir un cadre de transmission fiable et contrôlé.
 
-L'application est développée avec Symfony 8 et utilise PostgreSQL comme base de données. Le contenu des éléments stockés dans le coffre est chiffré avant d'être enregistré. Un système de mot de passe panique permet à l'utilisateur d'afficher un faux coffre en cas de contrainte, tout en envoyant une alerte à un contact de confiance.
+L’application intègre également des fonctionnalités orientées sécurité, notamment le chiffrement des données enregistrées dans le coffre, ainsi qu’un mot de passe panique permettant d’afficher un faux coffre en cas de contrainte, tout en envoyant une alerte à un contact de confiance.
 
-Pour installer le projet, il faut d'abord cloner le dépôt, puis lancer composer install pour récupérer les dépendances. Ensuite il faut copier le fichier .env en .env.local et y configurer la variable DATABASE_URL avec les identifiants de la base de données PostgreSQL, ainsi que MAILER_DSN pour l'envoi des emails.
+Ce projet a été réalisé dans le cadre de la formation **DWWM** au **CCI Campus Colmar**, en **avril 2026**.
 
-Une fois la configuration terminée, on crée la base avec la commande symfony console doctrine:database:create, puis on exécute les migrations avec symfony console doctrine:migrations:migrate. 
+## Fonctionnalités
 
+- Stockage sécurisé de données sensibles
+- Chiffrement des informations enregistrées
+- Gestion des bénéficiaires
+- Validation par notaire
+- Mot de passe panique avec affichage d’un faux coffre
+- Envoi d’une alerte à un contact de confiance
 
-Auteur : Besnik MEHMETI
+## Technologies
+
+- **Symfony 8**
+- **PostgreSQL**
+- **Twig**
+- **Doctrine**
+- **Symfony Mailer**
+
+## Installation
+
+1. Cloner le dépôt
+2. Installer les dépendances avec `composer install`
+3. Configurer l’environnement
+4. Lancer l’application
+
+## Accès au site
+
+http://vievault.besnik.mehmeti.servd16161.odns.fr/
+
+## Auteur
+
+**Besnik MEHMETI**
